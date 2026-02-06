@@ -1,0 +1,438 @@
+﻿type ChartOption = Record<string, any>
+
+type ChartTheme = {
+  textStyle: ChartOption
+  color: string[]
+  tooltip: ChartOption
+  legend: ChartOption
+  xAxis: ChartOption
+  yAxis: ChartOption
+  grid: ChartOption
+  series: {
+    line: ChartOption
+    bar: ChartOption
+    pie: ChartOption
+  }
+  markPoint: ChartOption
+  minLabelSize: number
+  minLegendSize: number
+}
+
+// 浠?CSS 鍙橀噺鍔ㄦ€佽幏鍙栦富棰樿壊
+const getThemeColors = () => {
+  if (typeof window === 'undefined') {
+    return {
+      revenue: '#5accff',
+      profit: '#36f1cd',
+      cost: '#ff6b6b',
+      target: '#f8c547',
+      performance: '#7cf29a',
+      textPrimary: '#e6f1ff',
+      textSecondary: '#a6bad2',
+      bgPanel: 'rgba(7, 14, 24, 0.92)',
+      border: 'rgba(90, 204, 255, 0.45)',
+      axisLine: '#2f425a',
+      splitLine: 'rgba(52, 72, 98, 0.35)'
+    }
+  }
+
+  const style = getComputedStyle(document.documentElement)
+  const get = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback
+
+  // 妫€娴嬪綋鍓嶆槸鍚︿负娴呰壊涓婚
+
+  return {
+    revenue: get('--chart-revenue', get('--accent-blue', '#5accff')),
+    profit: get('--chart-profit', get('--accent-cyan', '#36f1cd')),
+    cost: get('--chart-cost', get('--accent-rose', '#ff6b6b')),
+    target: get('--chart-target', get('--accent-amber', '#f8c547')),
+    performance: get('--chart-performance', get('--accent-lime', '#7cf29a')),
+    textPrimary: get('--text-primary', '#e6f1ff'),
+    textSecondary: get('--text-secondary', '#a6bad2'),
+    textMuted: get('--text-muted', '#6b7a8f'),
+    bgPanel: get('--bg-panel', 'rgba(7, 14, 24, 0.92)'),
+    border: get('--panel-border', 'rgba(90, 204, 255, 0.45)'),
+    axisLine: get('--panel-border', '#2f425a'),
+    splitLine: 'rgba(52, 72, 98, 0.35)'
+  }
+}
+
+// 闈欐€佽涔夎壊鏄犲皠 (鐢ㄤ簬 resolveSemanticKey)
+export const semanticColors = {
+  revenue: '#5accff',
+  profit: '#36f1cd',
+  cost: '#ff6b6b',
+  target: '#f8c547',
+  performance: '#7cf29a',
+  cashIn: '#36f1cd',
+  cashOut: '#ff6b6b',
+  netCash: '#7cf29a',
+  benchmark: '#f8c547'
+} as const
+
+type SemanticKey = keyof typeof semanticColors
+
+const getScale = () => {
+  if (typeof window === 'undefined') return 1
+  const next = window.innerWidth / 1920
+  return Math.min(1.9, Math.max(1, next))
+}
+
+const resolveSemanticKey = (series: ChartOption): SemanticKey | null => {
+  const semantic = series.semantic as SemanticKey | undefined
+  if (semantic && semanticColors[semantic]) return semantic
+
+  const name = String(series.name ?? '')
+  if (!name) return null
+  if (name.includes('钀ユ敹') || name.includes('鏀跺叆')) return 'revenue'
+  if (name.includes('鍒╂鼎') || name.includes('鏀剁泭')) return 'profit'
+  if (name.includes('鎴愭湰') || name.includes('璐圭敤')) return 'cost'
+  if (name.includes('鐩爣') || name.includes('瀹屾垚') || name.includes('杈炬垚')) return 'target'
+  if (name.includes('缁╂晥') || name.includes('琛ㄧ幇')) return 'performance'
+  if (name.includes('鐜伴噾娴佸叆')) return 'cashIn'
+  if (name.includes('鐜伴噾娴佸嚭')) return 'cashOut'
+  if (name.includes('鍑€娴侀噺')) return 'netCash'
+  if (name.includes('瀵规爣') || name.includes('鍩哄噯')) return 'benchmark'
+  return null
+}
+
+const resolveSemanticColor = (series: ChartOption) => {
+  const key = resolveSemanticKey(series)
+  if (!key) return null
+
+  // 鍔ㄦ€佽幏鍙栧綋鍓嶄富棰樼殑棰滆壊
+  const colors = getThemeColors()
+  const colorMap: Record<SemanticKey, string> = {
+    revenue: colors.revenue,
+    profit: colors.profit,
+    cost: colors.cost,
+    target: colors.target,
+    performance: colors.performance,
+    cashIn: colors.profit,
+    cashOut: colors.cost,
+    netCash: colors.performance,
+    benchmark: colors.target
+  }
+
+  return colorMap[key] || null
+}
+
+const hexToRgba = (hex: string, alpha: number) => {
+  const normalized = hex.replace('#', '')
+  if (normalized.length !== 6) return hex
+  const r = parseInt(normalized.slice(0, 2), 16)
+  const g = parseInt(normalized.slice(2, 4), 16)
+  const b = parseInt(normalized.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+const buildChartTheme = (): ChartTheme => {
+  const scale = getScale()
+  const scaleNumber = (value: number) => Math.round(value * scale)
+  const colors = getThemeColors()
+
+  const labelSize = scaleNumber(11)
+  const legendSize = scaleNumber(11)
+
+  return {
+    textStyle: {
+      color: colors.textPrimary,
+      fontFamily: "'Noto Sans SC', 'Microsoft YaHei', sans-serif",
+      fontSize: scaleNumber(12)
+    },
+    color: [
+      colors.revenue,
+      colors.profit,
+      colors.target,
+      colors.performance,
+      colors.cost
+    ],
+    tooltip: {
+      backgroundColor: colors.bgPanel,
+      borderColor: colors.border,
+      borderWidth: 1,
+      padding: [scaleNumber(8), scaleNumber(10)],
+      textStyle: { color: colors.textPrimary, fontSize: scaleNumber(12) },
+      axisPointer: { type: 'line', lineStyle: { color: colors.border } }
+    },
+    legend: {
+      textStyle: { color: colors.textSecondary, fontSize: legendSize },
+      itemWidth: scaleNumber(10),
+      itemHeight: scaleNumber(6),
+      itemGap: scaleNumber(12),
+      icon: 'roundRect'
+    },
+    xAxis: {
+      axisLine: { lineStyle: { color: colors.axisLine } },
+      axisTick: { show: false },
+      axisLabel: { color: colors.textSecondary, fontSize: labelSize, margin: scaleNumber(8) },
+      splitLine: { show: false }
+    },
+    yAxis: {
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: colors.textSecondary, fontSize: labelSize, margin: scaleNumber(8) },
+      splitLine: { lineStyle: { color: colors.splitLine } }
+    },
+    grid: { containLabel: true },
+    series: {
+      line: { lineStyle: { width: scaleNumber(2) }, emphasis: { focus: 'series' } },
+      bar: { itemStyle: { borderRadius: scaleNumber(6) }, emphasis: { focus: 'series' } },
+      pie: {
+        labelLine: {
+          length: scaleNumber(10),
+          length2: scaleNumber(10),
+          lineStyle: { color: 'rgba(166, 186, 210, 0.6)' }
+        },
+        emphasis: { scale: true }
+      }
+    },
+    markPoint: {
+      symbol: 'circle',
+      symbolSize: scaleNumber(6),
+      itemStyle: {
+        color: 'rgba(0, 0, 0, 0)',
+        borderWidth: 0,
+        shadowBlur: 0
+      },
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: '{c} 亿',
+        color: colors.textPrimary,
+        fontFamily: "'Chakra Petch', 'Noto Sans SC', sans-serif",
+        fontSize: scaleNumber(10),
+        fontWeight: 600,
+        padding: [scaleNumber(2), scaleNumber(6)],
+        borderRadius: scaleNumber(6),
+        backgroundColor: colors.bgPanel,
+        borderColor: colors.border,
+        borderWidth: 1,
+        textShadowColor: colors.border,
+        textShadowBlur: scaleNumber(6),
+        offset: [0, 0]
+      }
+    },
+    minLabelSize: labelSize,
+    minLegendSize: legendSize
+  }
+}
+
+const isPlainObject = (value: unknown) =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const mergeOptions = (base: ChartOption, extra: ChartOption) => {
+  const result: ChartOption = { ...base }
+  Object.keys(extra).forEach((key) => {
+    const baseValue = result[key]
+    const extraValue = extra[key]
+    if (isPlainObject(baseValue) && isPlainObject(extraValue)) {
+      result[key] = mergeOptions(baseValue, extraValue)
+    } else {
+      result[key] = extraValue
+    }
+  })
+  return result
+}
+
+const normalizeFontSize = (value: unknown, minSize: number) =>
+  typeof value === 'number' ? Math.max(value, minSize) : minSize
+
+const applyAxisTheme = (axisOption: any, axisTheme: ChartOption, minLabelSize: number) => {
+  const applySingle = (item: ChartOption) => {
+    const merged = mergeOptions(axisTheme, item)
+    if (isPlainObject(merged.axisLabel)) {
+      merged.axisLabel = {
+        ...merged.axisLabel,
+        fontSize: normalizeFontSize(merged.axisLabel.fontSize, minLabelSize)
+      }
+    }
+    return merged
+  }
+
+  if (Array.isArray(axisOption)) {
+    return axisOption.map((item) => applySingle(item))
+  }
+  if (isPlainObject(axisOption)) {
+    return applySingle(axisOption)
+  }
+  return axisOption
+}
+
+const applyLegendTheme = (legendOption: any, legendTheme: ChartOption, minLegendSize: number) => {
+  const applySingle = (item: ChartOption) => {
+    const merged = mergeOptions(legendTheme, item)
+    if (isPlainObject(merged.textStyle)) {
+      merged.textStyle = {
+        ...merged.textStyle,
+        fontSize: normalizeFontSize(merged.textStyle.fontSize, minLegendSize)
+      }
+    }
+    return merged
+  }
+
+  if (Array.isArray(legendOption)) {
+    return legendOption.map((item) => applySingle(item))
+  }
+  if (isPlainObject(legendOption)) {
+    return applySingle(legendOption)
+  }
+  return legendOption
+}
+
+const applyTooltipTheme = (tooltipOption: any, tooltipTheme: ChartOption) => {
+  if (tooltipOption === true) return { ...tooltipTheme }
+  if (tooltipOption === false) return { show: false }
+  if (isPlainObject(tooltipOption)) {
+    return mergeOptions(tooltipTheme, tooltipOption)
+  }
+  return tooltipOption
+}
+
+const applyGridTheme = (gridOption: any, gridTheme: ChartOption) => {
+  if (Array.isArray(gridOption)) {
+    return gridOption.map((item) => mergeOptions(gridTheme, item))
+  }
+  if (isPlainObject(gridOption)) {
+    return mergeOptions(gridTheme, gridOption)
+  }
+  return gridOption
+}
+
+const applySeriesTheme = (seriesOption: any, theme: ChartTheme) => {
+  if (!Array.isArray(seriesOption)) return seriesOption
+
+  return seriesOption.map((item) => {
+    if (!isPlainObject(item)) return item
+
+    const next = { ...item }
+    const seriesType = item.type
+    const semanticColor = resolveSemanticColor(item)
+    const fallbackColor = theme.color[0]
+
+    if (seriesType === 'line') {
+      const lineStyle = isPlainObject(item.lineStyle) ? { ...item.lineStyle } : {}
+      if (lineStyle.width === undefined) {
+        lineStyle.width = theme.series.line.lineStyle.width
+      }
+      if (lineStyle.color === undefined && semanticColor) {
+        lineStyle.color = semanticColor
+      }
+      next.lineStyle = lineStyle
+      if (isPlainObject(item.areaStyle) && item.areaStyle.color === undefined && semanticColor) {
+        next.areaStyle = { ...item.areaStyle, color: hexToRgba(semanticColor, 0.18) }
+      }
+      if (next.emphasis === undefined) {
+        next.emphasis = theme.series.line.emphasis
+      }
+    }
+
+    if (seriesType === 'bar') {
+      const itemStyle = isPlainObject(item.itemStyle) ? { ...item.itemStyle } : {}
+      if (itemStyle.borderRadius === undefined) {
+        itemStyle.borderRadius = theme.series.bar.itemStyle.borderRadius
+      }
+      if (itemStyle.color === undefined && semanticColor) {
+        itemStyle.color = semanticColor
+      }
+      next.itemStyle = itemStyle
+      if (isPlainObject(item.label)) {
+        const label = { ...item.label }
+        if (label.color === undefined) {
+          label.color = theme.textStyle.color
+        }
+        next.label = label
+      }
+      if (next.emphasis === undefined) {
+        next.emphasis = theme.series.bar.emphasis
+      }
+    }
+
+    if (seriesType === 'pie') {
+      // 搴旂敤楗煎浘鏍囩棰滆壊
+      const label = isPlainObject(item.label) ? { ...item.label } : {}
+      if (label.color === undefined) {
+        label.color = theme.textStyle.color
+      }
+      next.label = label
+      if (!isPlainObject(item.labelLine)) {
+        next.labelLine = theme.series.pie.labelLine
+      }
+      if (next.emphasis === undefined) {
+        next.emphasis = theme.series.pie.emphasis
+      }
+    }
+
+    if (seriesType === 'gauge') {
+      // 搴旂敤 gauge 鍥捐〃 detail 棰滆壊
+      const detail = isPlainObject(item.detail) ? { ...item.detail } : {}
+      if (detail.color === undefined) {
+        detail.color = theme.textStyle.color
+      }
+      next.detail = detail
+    }
+
+    if (isPlainObject(item.markPoint)) {
+      const markPointBase = mergeOptions(theme.markPoint, item.markPoint)
+      if (semanticColor) {
+        if (isPlainObject(markPointBase.itemStyle)) {
+          markPointBase.itemStyle = {
+            ...markPointBase.itemStyle,
+            borderColor: markPointBase.itemStyle.borderColor ?? semanticColor,
+            shadowColor: markPointBase.itemStyle.shadowColor ?? hexToRgba(semanticColor, 0.6)
+          }
+        }
+        if (isPlainObject(markPointBase.label)) {
+          markPointBase.label = {
+            ...markPointBase.label,
+            borderColor: markPointBase.label.borderColor ?? hexToRgba(semanticColor, 0.6),
+            textShadowColor: markPointBase.label.textShadowColor ?? hexToRgba(semanticColor, 0.7)
+          }
+        }
+      } else if (isPlainObject(markPointBase.itemStyle)) {
+        markPointBase.itemStyle = {
+          ...markPointBase.itemStyle,
+          borderColor: markPointBase.itemStyle.borderColor ?? fallbackColor,
+          shadowColor: markPointBase.itemStyle.shadowColor ?? hexToRgba(fallbackColor, 0.6)
+        }
+      }
+      next.markPoint = markPointBase
+    }
+
+    return next
+  })
+}
+
+export const applyChartTheme = (options: ChartOption = {}) => {
+  const theme = buildChartTheme()
+  const themed = mergeOptions({ textStyle: theme.textStyle, color: theme.color }, options)
+
+  if (options.tooltip !== undefined) {
+    themed.tooltip = applyTooltipTheme(options.tooltip, theme.tooltip)
+  }
+
+  if (options.legend !== undefined) {
+    themed.legend = applyLegendTheme(options.legend, theme.legend, theme.minLegendSize)
+  }
+
+  if (options.xAxis !== undefined) {
+    themed.xAxis = applyAxisTheme(options.xAxis, theme.xAxis, theme.minLabelSize)
+  }
+
+  if (options.yAxis !== undefined) {
+    themed.yAxis = applyAxisTheme(options.yAxis, theme.yAxis, theme.minLabelSize)
+  }
+
+  if (options.grid !== undefined) {
+    themed.grid = applyGridTheme(options.grid, theme.grid)
+  }
+
+  if (options.series !== undefined) {
+    themed.series = applySeriesTheme(themed.series, theme)
+  }
+
+  return themed
+}
+
+
+

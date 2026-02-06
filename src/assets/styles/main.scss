@@ -1,0 +1,287 @@
+﻿/* main.scss - Command Center Theme */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg-main: #070d16;
+  --bg-panel: rgba(12, 22, 36, 0.86);
+  --bg-panel-strong: rgba(14, 28, 46, 0.96);
+  --panel-border: rgba(90, 204, 255, 0.26);
+
+  --text-primary: #e6f1ff;
+  --text-secondary: #c3d4ea;
+  --text-muted: #93a6c2;
+  --text-strong: #f4f8ff;
+
+  --accent-cyan: #36f1cd;
+  --accent-blue: #5accff;
+  --accent-amber: #f8c547;
+  --accent-rose: #ff6b6b;
+  --accent-lime: #7cf29a;
+
+  --shadow-soft: 0 18px 45px rgba(5, 12, 20, 0.55);
+
+  --font-body: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Chakra Petch', 'Noto Sans SC', sans-serif;
+
+  --focus-ring: 0 0 0 2px rgba(90, 204, 255, 0.55);
+  --focus-border: rgba(90, 204, 255, 0.75);
+  --table-head-bg: rgba(90, 204, 255, 0.12);
+  --table-row-hover: rgba(90, 204, 255, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  /* 强制创建合成层，确保 radial-gradient 在初始加载时正确渲染 */
+  transform: translateZ(0);
+  background-image:
+    radial-gradient(1200px 600px at 12% 10%, rgba(54, 241, 205, 0.1), transparent 55%),
+    radial-gradient(900px 500px at 88% 18%, rgba(90, 204, 255, 0.12), transparent 60%),
+    radial-gradient(1200px 800px at 40% 82%, rgba(248, 197, 71, 0.06), transparent 65%);
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* 动态视口高度，解决初始加载时计算问题 */
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(90, 204, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90, 204, 255, 0.05) 1px, transparent 1px);
+  background-size: 96px 96px;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(90, 204, 255, 0.15), transparent 40%);
+  opacity: 0.24;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app > * {
+  position: relative;
+  z-index: 1;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius, 16px);
+  padding: var(--panel-padding, 16px);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+  line-height: 1.55;
+}
+
+.panel-strong {
+  background: var(--bg-panel-strong);
+}
+
+.panel-title {
+  margin: 0 0 var(--panel-title-gap, 12px) 0;
+  font-family: var(--font-display);
+  font-size: var(--panel-title-size, 0.85rem);
+  letter-spacing: var(--panel-title-spacing, 0.32em);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+}
+
+.panel-subtitle {
+  margin-top: 4px;
+  font-size: var(--panel-subtitle-size, 0.7rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.kpi-grid {
+  display: grid;
+  gap: var(--kpi-gap, 12px);
+  grid-template-columns: repeat(auto-fit, minmax(var(--kpi-min-width, 140px), 1fr));
+}
+
+.kpi {
+  padding: var(--kpi-padding, 12px);
+  border-radius: var(--kpi-radius, 12px);
+  background: var(--kpi-bg);
+  border: 1px solid var(--kpi-border);
+  display: grid;
+  gap: var(--kpi-value-gap, 6px);
+}
+
+.kpi-label {
+  font-size: var(--kpi-label-size, 0.7rem);
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: var(--kpi-value-size, 1.3rem);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--chip-padding-y, 4px) var(--chip-padding-x, 10px);
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  font-size: var(--chip-font-size, 0.7rem);
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.progress {
+  width: 100%;
+  height: var(--progress-height, 6px);
+  background: var(--progress-bg);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--progress-bar);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--table-font-size, 0.78rem);
+  color: var(--text-secondary);
+  margin-top: var(--panel-table-gap, 8px);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--table-row-padding-y, 8px) var(--table-row-padding-x, 10px);
+  border-bottom: 1px solid var(--table-border);
+  text-align: left;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: var(--table-head-spacing, 0.16em);
+  text-transform: uppercase;
+  font-size: var(--table-head-size, 0.65rem);
+  background: var(--table-head-bg);
+  border-bottom-color: var(--panel-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.data-table tbody tr:nth-child(odd) {
+  background: var(--table-odd-row);
+}
+
+.data-table tbody tr:hover {
+  background: var(--table-row-hover);
+}
+
+.panel .chart {
+  margin-top: var(--panel-chart-gap, 8px);
+}
+
+.glass-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.glass-panel-strong {
+  background: var(--bg-panel-strong);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(90, 204, 255, 0.25);
+  border-radius: 999px;
+}
+
+:where(button, [role='button'], a, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: var(--focus-border);
+}
+
+.data-table {
+  user-select: text;
+}
+
+.data-table th,
+.data-table td {
+  word-break: break-word;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

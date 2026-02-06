@@ -1,0 +1,463 @@
+// themes.scss - 多主题变量定义
+// 遵循 WCAG 2.1 对比度标准: 普通文本 4.5:1, 大文本 3:1
+
+// ============================================
+// 主题 1: 深空模式 (Dark Space) - 默认主题
+// ============================================
+:root,
+.theme-dark-space {
+  // 背景色系
+  --bg-main: #070d16;
+  --bg-panel: rgba(12, 22, 36, 0.86);
+  --bg-panel-strong: rgba(14, 28, 46, 0.96);
+
+  // 边框
+  --panel-border: rgba(90, 204, 255, 0.26);
+
+  // 文本色系
+  --text-primary: #e6f1ff;
+  --text-secondary: #c3d4ea;
+  --text-muted: #93a6c2;
+  --text-strong: #f4f8ff;
+
+  // 强调色
+  --accent-cyan: #36f1cd;
+  --accent-blue: #5accff;
+  --accent-amber: #f8c547;
+  --accent-rose: #ff6b6b;
+  --accent-lime: #7cf29a;
+
+  // 阴影
+  --shadow-soft: 0 18px 45px rgba(5, 12, 20, 0.55);
+
+  // 焦点
+  --focus-ring: 0 0 0 2px rgba(90, 204, 255, 0.55);
+  --focus-border: rgba(90, 204, 255, 0.75);
+
+  // 表格
+  --table-head-bg: rgba(90, 204, 255, 0.12);
+  --table-row-hover: rgba(90, 204, 255, 0.14);
+
+  // 粒子背景 - 深空模式禁用粒子动画
+  --particles-enabled: 0;
+  --particles-color: 90, 204, 255;
+  --particles-bg-start: #0a0f1a;
+  --particles-bg-end: #0b1626;
+
+  // 图表语义色
+  --chart-revenue: #5accff;
+  --chart-profit: #36f1cd;
+  --chart-cost: #ff6b6b;
+  --chart-target: #f8c547;
+  --chart-performance: #7cf29a;
+
+  // 组件特定颜色
+  --kpi-bg: rgba(12, 24, 40, 0.65);
+  --kpi-border: rgba(90, 204, 255, 0.12);
+  --chip-bg: rgba(90, 204, 255, 0.1);
+  --chip-border: rgba(90, 204, 255, 0.2);
+  --progress-bg: rgba(255, 255, 255, 0.08);
+  --progress-bar: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  --table-border: rgba(90, 204, 255, 0.08);
+  --table-odd-row: rgba(12, 24, 40, 0.35);
+  --card-bg: rgba(12, 24, 40, 0.86);
+  --card-border: rgba(90, 204, 255, 0.22);
+  --divider-color: rgba(90, 204, 255, 0.3);
+
+  // 子屏幕卡片内嵌元素背景
+  --subcard-bg: rgba(12, 24, 40, 0.6);
+  --subscreen-subcard-bg: rgba(32, 78, 108, 0.1);
+  --subscreen-card-bg: linear-gradient(180deg, rgba(34, 86, 116, 0.4), rgba(20, 64, 92, 0.26));
+  --subscreen-ring-bg: linear-gradient(160deg, rgba(40, 98, 128, 0.46), rgba(24, 70, 98, 0.32));
+  --subcard-text: var(--text-secondary);
+
+  // 导航和按钮
+  --nav-bg: rgba(10, 20, 32, 0.6);
+  --nav-border: rgba(90, 204, 255, 0.2);
+  --nav-hover-border: rgba(90, 204, 255, 0.6);
+  --nav-hover-shadow: 0 0 16px rgba(90, 204, 255, 0.25);
+  --nav-active-bg: rgba(54, 241, 205, 0.15);
+  --nav-active-border: rgba(54, 241, 205, 0.7);
+  --icon-border: rgba(54, 241, 205, 0.5);
+  --icon-shadow: 0 0 12px rgba(54, 241, 205, 0.3);
+
+  // Portal 页面专用
+  --hero-bg: linear-gradient(135deg, rgba(12, 28, 50, 0.96), rgba(12, 28, 46, 0.9));
+  --hero-border: rgba(90, 204, 255, 0.35);
+  --hero-shadow: 0 28px 60px rgba(5, 12, 20, 0.6);
+  --hero-glow: radial-gradient(circle at 20% 20%, rgba(54, 241, 205, 0.12), transparent 60%);
+  --metric-bg: rgba(11, 24, 40, 0.78);
+  --metric-border: rgba(90, 204, 255, 0.18);
+  --chart-container-bg: rgba(9, 22, 38, 0.78);
+  --status-bg: rgba(54, 241, 205, 0.18);
+  --status-border: rgba(54, 241, 205, 0.45);
+  --status-glow: 0 0 12px rgba(54, 241, 205, 0.8);
+  --card-top-line: linear-gradient(90deg, rgba(54, 241, 205, 0.8), rgba(90, 204, 255, 0.2));
+  --card-hover-glow: radial-gradient(circle at 80% 20%, rgba(90, 204, 255, 0.18), transparent 60%);
+}
+
+// ============================================
+// 主题 2: 浅色专业 (Light Professional) - 「晨雾山峦」
+// 设计理念：水墨画意境 + 晨曦穿透薄雾，暖冷交织
+// 质感：毛玻璃效果 + 多层光晕 + 精致阴影层次
+// ============================================
+.theme-light-professional {
+  // 背景色系 - 带有微暖调的灰白（如晨雾中的宣纸）
+  --bg-main: #f0f2f5;
+  --bg-panel: rgba(255, 255, 255, 0.82);
+  --bg-panel-strong: rgba(255, 255, 255, 0.94);
+
+  // 边框 - 精致的蓝调边框，增强层次感
+  --panel-border: rgba(100, 130, 170, 0.22);
+
+  // 文本色系 - 深邃的墨蓝色 (对比度 >= 4.5:1)
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-strong: #0f172a;
+
+  // 强调色 - 精致的海洋蓝绿色系
+  --accent-cyan: #0891b2;    // 深青 - 主强调
+  --accent-blue: #3b82f6;    // 明亮蓝 - 品牌色
+  --accent-amber: #d97706;   // 琥珀金 - 警示/高亮
+  --accent-rose: #e11d48;    // 玫瑰红 - 错误/下降
+  --accent-lime: #10b981;    // 翡翠绿 - 成功/上升
+
+  // 阴影 - 多层次柔和阴影，营造悬浮感
+  --shadow-soft:
+    0 1px 2px rgba(30, 41, 59, 0.04),
+    0 4px 8px rgba(30, 41, 59, 0.06),
+    0 12px 24px rgba(8, 145, 178, 0.08),
+    0 24px 48px rgba(59, 130, 246, 0.04);
+
+  // 焦点 - 明亮的青蓝光环
+  --focus-ring: 0 0 0 3px rgba(8, 145, 178, 0.28);
+  --focus-border: rgba(8, 145, 178, 0.65);
+
+  // 表格 - 微妙的条纹和悬停效果
+  --table-head-bg: rgba(59, 130, 246, 0.08);
+  --table-row-hover: rgba(8, 145, 178, 0.08);
+
+  // 粒子背景 - 晨雾中的微光粒子（暖色调）
+  --particles-enabled: 1;
+  --particles-color: 167, 139, 250;
+  --particles-bg-start: #f0f2f5;
+  --particles-bg-end: #e8ecf2;
+
+  // 图表语义色 - 饱和度适中的专业色板
+  --chart-revenue: #3b82f6;  // 明亮蓝 - 营收
+  --chart-profit: #0891b2;   // 深青 - 利润
+  --chart-cost: #e11d48;     // 玫瑰红 - 成本
+  --chart-target: #d97706;   // 琥珀金 - 目标
+  --chart-performance: #10b981; // 翡翠绿 - 绩效
+
+  // 渐变色 - 精致的双色渐变
+  --gradient-primary: linear-gradient(135deg, #0891b2 0%, #3b82f6 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #0891b2 100%);
+  --gradient-warning: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+
+  // 组件特定颜色 - 毛玻璃质感
+  --kpi-bg: rgba(255, 255, 255, 0.88);
+  --kpi-border: rgba(100, 130, 170, 0.15);
+  --chip-bg: rgba(59, 130, 246, 0.1);
+  --chip-border: rgba(59, 130, 246, 0.28);
+  --progress-bg: rgba(100, 116, 139, 0.12);
+  --progress-bar: linear-gradient(90deg, #0891b2, #3b82f6);
+  --table-border: rgba(100, 130, 170, 0.12);
+  --table-odd-row: rgba(59, 130, 246, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-border: rgba(100, 130, 170, 0.18);
+  --divider-color: rgba(100, 130, 170, 0.22);
+
+  // 子屏幕卡片内嵌元素背景 - 微妙的层次区分
+  --subcard-bg: rgba(241, 245, 249, 0.95);
+  --subscreen-subcard-bg: rgba(236, 246, 252, 0.58);
+  --subscreen-card-bg: linear-gradient(180deg, rgba(248, 253, 255, 0.68), rgba(236, 246, 252, 0.6));
+  --subscreen-ring-bg: linear-gradient(160deg, rgba(242, 251, 255, 0.72), rgba(229, 245, 251, 0.62));
+  --subcard-text: var(--text-secondary);
+
+  // 导航和按钮 - 毛玻璃导航栏
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: rgba(100, 130, 170, 0.2);
+  --nav-hover-border: rgba(59, 130, 246, 0.55);
+  --nav-hover-shadow: 0 4px 20px rgba(59, 130, 246, 0.18);
+  --nav-active-bg: rgba(8, 145, 178, 0.12);
+  --nav-active-border: rgba(8, 145, 178, 0.65);
+  --icon-border: rgba(8, 145, 178, 0.5);
+  --icon-shadow: 0 4px 12px rgba(8, 145, 178, 0.22);
+
+  // Portal 页面专用 - 晨曦光晕效果
+  --hero-bg: linear-gradient(155deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 50%, rgba(236, 242, 248, 0.88) 100%);
+  --hero-border: rgba(59, 130, 246, 0.22);
+  --hero-shadow:
+    0 2px 8px rgba(30, 41, 59, 0.04),
+    0 8px 24px rgba(30, 41, 59, 0.06),
+    0 20px 48px rgba(59, 130, 246, 0.1);
+  --hero-glow: radial-gradient(ellipse 60% 50% at 15% 15%, rgba(251, 191, 146, 0.15), transparent 50%);
+  --metric-bg: rgba(255, 255, 255, 0.85);
+  --metric-border: rgba(100, 130, 170, 0.15);
+  --chart-container-bg: rgba(248, 250, 252, 0.92);
+  --status-bg: rgba(16, 185, 129, 0.12);
+  --status-border: rgba(16, 185, 129, 0.45);
+  --status-glow: 0 2px 12px rgba(16, 185, 129, 0.35);
+  --card-top-line: linear-gradient(90deg, rgba(251, 146, 60, 0.45) 0%, rgba(14, 165, 197, 0.4) 40%, rgba(167, 139, 250, 0.3) 100%);
+  --card-hover-glow: radial-gradient(ellipse 70% 60% at 85% 15%, rgba(167, 139, 250, 0.1), transparent 50%);
+}
+
+// ============================================
+// 主题 3: 金融科技 (Fintech Dark)
+// 设计理念：高端、精准、数据驱动的金融科技风格
+// 色彩灵感：深邃蓝黑底色 + 金色/琥珀强调，传达财富与专业
+// ============================================
+.theme-fintech-dark {
+  // 背景色系 - 深邃的藏青蓝，带有微妙的紫色调
+  --bg-main: #0a0e1a;
+  --bg-panel: rgba(12, 17, 32, 0.94);
+  --bg-panel-strong: rgba(18, 24, 42, 0.97);
+
+  // 边框 - 金色调边框，体现金融质感
+  --panel-border: rgba(212, 175, 55, 0.25);
+
+  // 文本色系
+  --text-primary: #f0f4f8;
+  --text-secondary: #b8c5d6;
+  --text-muted: #7a8ba3;
+  --text-strong: #ffffff;
+
+  // 强调色 - 金色为主调，蓝色为辅
+  --accent-cyan: #60a5fa;    // 天蓝 - 数据/信息
+  --accent-blue: #3b82f6;    // 蓝色 - 品牌色
+  --accent-amber: #d4af37;   // 金色 - 主强调/财富
+  --accent-rose: #f43f5e;    // 玫红 - 下跌/警告
+  --accent-lime: #10b981;    // 翠绿 - 上涨/成功
+
+  // 阴影 - 带金色光晕
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(212, 175, 55, 0.03);
+
+  // 焦点
+  --focus-ring: 0 0 0 2px rgba(212, 175, 55, 0.4);
+  --focus-border: rgba(212, 175, 55, 0.6);
+
+  // 表格
+  --table-head-bg: rgba(212, 175, 55, 0.08);
+  --table-row-hover: rgba(212, 175, 55, 0.06);
+
+  // 粒子背景 - 金色粒子
+  --particles-enabled: 1;
+  --particles-color: 212, 175, 55;
+  --particles-bg-start: #0a0e1a;
+  --particles-bg-end: #0f1428;
+
+  // 图表语义色 - 金融专业色板
+  --chart-revenue: #60a5fa;  // 天蓝 - 营收
+  --chart-profit: #d4af37;   // 金色 - 利润（金钱）
+  --chart-cost: #f43f5e;     // 玫红 - 成本/支出
+  --chart-target: #fbbf24;   // 琥珀 - 目标
+  --chart-performance: #10b981; // 翠绿 - 绩效/增长
+
+  // 渐变色 - 金融质感渐变
+  --gradient-primary: linear-gradient(135deg, #d4af37 0%, #f59e0b 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%);
+
+  // 组件特定颜色 - 金融科技适配
+  --kpi-bg: rgba(18, 24, 42, 0.7);
+  --kpi-border: rgba(212, 175, 55, 0.15);
+  --chip-bg: rgba(212, 175, 55, 0.1);
+  --chip-border: rgba(212, 175, 55, 0.25);
+  --progress-bg: rgba(255, 255, 255, 0.06);
+  --progress-bar: linear-gradient(90deg, var(--accent-amber), var(--accent-lime));
+  --table-border: rgba(212, 175, 55, 0.1);
+  --table-odd-row: rgba(212, 175, 55, 0.04);
+  --card-bg: rgba(12, 17, 32, 0.9);
+  --card-border: rgba(212, 175, 55, 0.2);
+  --divider-color: rgba(212, 175, 55, 0.25);
+
+  // 子屏幕卡片内嵌元素背景
+  --subcard-bg: rgba(18, 24, 42, 0.6);
+  --subscreen-subcard-bg: rgba(42, 62, 88, 0.12);
+  --subscreen-card-bg: linear-gradient(180deg, rgba(52, 78, 108, 0.42), rgba(34, 58, 84, 0.28));
+  --subscreen-ring-bg: linear-gradient(160deg, rgba(58, 86, 118, 0.48), rgba(38, 62, 90, 0.34));
+  --subcard-text: var(--text-secondary);
+
+  // 导航和按钮 - 金融科技适配
+  --nav-bg: rgba(18, 24, 42, 0.7);
+  --nav-border: rgba(212, 175, 55, 0.2);
+  --nav-hover-border: rgba(212, 175, 55, 0.5);
+  --nav-hover-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+  --nav-active-bg: rgba(212, 175, 55, 0.15);
+  --nav-active-border: rgba(212, 175, 55, 0.6);
+  --icon-border: rgba(212, 175, 55, 0.5);
+  --icon-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+
+  // Portal 页面专用 - 金融科技适配
+  --hero-bg: linear-gradient(135deg, rgba(18, 24, 42, 0.96), rgba(12, 17, 32, 0.92));
+  --hero-border: rgba(212, 175, 55, 0.3);
+  --hero-shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
+  --hero-glow: radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.1), transparent 60%);
+  --metric-bg: rgba(18, 24, 42, 0.8);
+  --metric-border: rgba(212, 175, 55, 0.15);
+  --chart-container-bg: rgba(12, 17, 32, 0.85);
+  --status-bg: rgba(212, 175, 55, 0.15);
+  --status-border: rgba(212, 175, 55, 0.4);
+  --status-glow: 0 0 12px rgba(212, 175, 55, 0.5);
+  --card-top-line: linear-gradient(90deg, rgba(212, 175, 55, 0.7), rgba(59, 130, 246, 0.2));
+  --card-hover-glow: radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.12), transparent 60%);
+}
+
+// ============================================
+// 主题切换过渡效果
+// ============================================
+html {
+  // 主题切换时的平滑过渡
+  &:not(.no-transitions) {
+    *,
+    *::before,
+    *::after {
+      transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+  }
+}
+
+// 减少动画模式 - 尊重用户偏好
+@media (prefers-reduced-motion: reduce) {
+  html {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+// ============================================
+// 主题特定的背景装饰
+// ============================================
+
+// 专业浅色主题 - 「晨雾山峦」(Misty Peaks)
+// 灵感：中国水墨画 + 晨曦穿透薄雾的意境
+// 暖冷色交织，宁静专业却充满生命力
+.theme-light-professional body {
+  background-image:
+    // 第一层：左上角晨曦 - 温暖的玫瑰金光晕（太阳升起的方向）
+    radial-gradient(ellipse 900px 600px at -5% -10%, rgba(251, 191, 146, 0.18), transparent 50%),
+    // 第二层：顶部中央 - 柔和的琥珀暖光扩散
+    radial-gradient(ellipse 1200px 400px at 40% -15%, rgba(245, 158, 66, 0.08), transparent 55%),
+    // 第三层：右上角 - 清晨天空的淡紫罗兰
+    radial-gradient(ellipse 800px 500px at 100% 0%, rgba(167, 139, 250, 0.1), transparent 45%),
+    // 第四层：中央偏左 - 主体青蓝色调（山峦的冷调）
+    radial-gradient(ellipse 1400px 800px at 25% 45%, rgba(14, 165, 197, 0.07), transparent 60%),
+    // 第五层：右侧中部 - 薄荷绿的生机
+    radial-gradient(ellipse 600px 450px at 95% 40%, rgba(52, 211, 153, 0.06), transparent 45%),
+    // 第六层：底部 - 深邃的靛蓝（山脚的阴影）
+    radial-gradient(ellipse 1600px 500px at 50% 110%, rgba(79, 70, 229, 0.06), transparent 50%),
+    // 第七层：左下角 - 薄雾的灰蓝
+    radial-gradient(ellipse 500px 400px at 5% 85%, rgba(148, 163, 184, 0.12), transparent 40%);
+}
+
+// 金融科技主题 - 金色光晕
+.theme-fintech-dark body {
+  background-image:
+    radial-gradient(ellipse 1200px 600px at 15% 10%, rgba(212, 175, 55, 0.08), transparent 55%),
+    radial-gradient(ellipse 900px 450px at 85% 15%, rgba(59, 130, 246, 0.06), transparent 50%),
+    radial-gradient(ellipse 800px 400px at 50% 85%, rgba(212, 175, 55, 0.04), transparent 50%);
+}
+
+// ============================================
+// 浅色主题增强样式 - 毛玻璃质感 & 精致细节
+// ============================================
+.theme-light-professional {
+  // 面板毛玻璃效果
+  .panel,
+  .glass-panel {
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    box-shadow:
+      0 1px 2px rgba(30, 41, 59, 0.04),
+      0 4px 12px rgba(30, 41, 59, 0.06),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  }
+
+  // 卡片顶部装饰线 - 渐变光泽（缩短长度，两端留出圆角空间）
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: var(--card-top-line);
+    border-radius: 0 0 2px 2px;
+    opacity: 0.85;
+  }
+
+  // KPI 卡片增强
+  .kpi {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+      0 1px 3px rgba(30, 41, 59, 0.04),
+      0 4px 8px rgba(30, 41, 59, 0.04),
+      0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  }
+
+  // 数据表格增强
+  .data-table th {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+  }
+
+  .data-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(8, 145, 178, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+  }
+
+  // 进度条增强
+  .progress {
+    background: linear-gradient(180deg, rgba(100, 130, 170, 0.15) 0%, rgba(100, 130, 170, 0.08) 100%);
+    box-shadow: inset 0 1px 2px rgba(30, 41, 59, 0.08);
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #0891b2 0%, #3b82f6 50%, #8b5cf6 100%);
+    box-shadow: 0 1px 4px rgba(8, 145, 178, 0.35);
+  }
+
+  // Chip 标签增强
+  .chip {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+  }
+
+  // 子卡片内嵌元素增强
+  .collection-rate,
+  .cost-item,
+  .cost-item-row,
+  .post-item,
+  .breakeven-item,
+  .merge-item,
+  .service-item,
+  .disposal-row {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow:
+      0 1px 2px rgba(30, 41, 59, 0.03),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    border: 1px solid rgba(100, 130, 170, 0.12);
+  }
+
+  // 滚动条增强
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.35), rgba(8, 145, 178, 0.25));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.5), rgba(8, 145, 178, 0.4));
+  }
+}

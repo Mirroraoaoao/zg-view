@@ -2,7 +2,7 @@
   <SubScreenLayout title="重点项目" subtitle="Key Projects" meta="数据更新时间 08:30">
     <div class="projects-grid">
       <section class="panel system-status">
-        <h3 class="panel-title">L1：集团年度重点项目清单 / L2：对接经营调度系统（待明细）</h3>
+        <h3 class="panel-title">L1：集团年度重点项目清单 / L2：重点项目数量（待明细）</h3>
         <div class="status-layout">
           <article class="status-card">
             <div class="status-icon">
@@ -12,24 +12,24 @@
               </svg>
             </div>
             <div class="status-content">
-              <div class="status-label">{{ keyProjectsData.systemStatus.label }}</div>
-              <div class="status-value">{{ keyProjectsData.systemStatus.value }}</div>
-              <div class="status-note">{{ keyProjectsData.systemStatus.note }}</div>
+              <div class="status-label">{{ keyProjectsData.projectCount.label }}</div>
+              <div class="status-value">{{ keyProjectsData.projectCount.value }}</div>
+              <div class="status-note">{{ keyProjectsData.projectCount.note }}</div>
             </div>
           </article>
 
           <article class="status-meta">
             <div class="meta-row">
               <span>当前状态</span>
-              <strong>{{ keyProjectsData.systemStatus.value }}</strong>
+              <strong>{{ keyProjectsData.projectCount.value }}</strong>
             </div>
             <div class="meta-row">
               <span>指标口径</span>
-              <strong>系统对接</strong>
+              <strong>项目数量</strong>
             </div>
             <div class="meta-row">
               <span>展示字段</span>
-              <strong>{{ keyProjectsData.systemStatus.label }}</strong>
+              <strong>{{ keyProjectsData.projectCount.label }}</strong>
             </div>
           </article>
         </div>

@@ -72,7 +72,7 @@
       tag: '调度',
       desc: '年度重点项目进度管理',
       metrics: [
-        { label: '对接经营调度系统', value: '待明细' },
+        { label: '重点项目数量', value: '待明细' },
         { label: '重点项目完成率', value: '62%' }
       ],
       chart: null
@@ -98,7 +98,7 @@
       tag: '招商',
       desc: '招商增量与风险量化',
       metrics: [
-        { label: '合作区/珠海市重大项目招引', value: '合作区新6/18；珠海新6/18' },
+        { label: '合作区/珠海市重大项目招引', value: '18 项' },
         { label: '合作区招引企业税收贡献', value: '￥ 20 亿' },
         { label: '诉讼项目数量', value: '7 项' },
         { label: '珠海招引企业税收贡献', value: '￥ 22 亿' }
@@ -477,11 +477,11 @@ export const keyProjectsData = {
   hierarchy: {
     l1: ['集团年度重点项目清单', '重点项目完成率']
   },
-  // 经营调度系统对接状态
-  systemStatus: {
-    label: '对接经营调度系统（待明细）',
+  // 重点项目数量
+  projectCount: {
+    label: '重点项目数量（待明细）',
     value: '待明细',
-    note: '系统对接中，预计下阶段完成'
+    note: '待接入经营调度系统后明确'
   },
   // 重点项目完成率
   completionRate: {

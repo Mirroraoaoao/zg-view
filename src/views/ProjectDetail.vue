@@ -148,6 +148,10 @@
             <span>融资情况</span>
             <strong>{{ operationData.fundStatus.financing }}</strong>
           </div>
+          <div class="fund-item">
+            <span>集团综合融资成本率</span>
+            <strong>{{ operationData.fundStatus.comprehensiveFinancingCostRate }}</strong>
+          </div>
           <div class="fund-item highlight">
             <span>有息负债余额</span>
             <strong>{{ operationData.fundStatus.interestBearingDebt }}</strong>

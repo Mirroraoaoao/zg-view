@@ -460,6 +460,7 @@ export const operationData = {
   fundStatus: {
     overall: '稳健',
     financing: '推进中',
+    comprehensiveFinancingCostRate: '4.2%',
     interestBearingDebt: '￥ 620 亿'
   },
   // 资产运营情况

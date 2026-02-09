@@ -5,15 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useThemeStore } from '../stores/theme'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const props = withDefaults(defineProps<{ particleCount?: number; connectionDistance?: number }>(), {
   particleCount: 80,
   connectionDistance: 140
 })
 
-const themeStore = useThemeStore()
 const canvas = ref<HTMLCanvasElement | null>(null)
 let animationFrameId = 0
 let resizeHandler: (() => void) | null = null
@@ -24,14 +22,22 @@ let h = 0
 let shouldAnimate = true
 let connectionDistance = 140
 
-// 从 CSS 变量获取主题色
-const getThemeColors = () => {
+// 缓存颜色和渐变，避免每帧 DOM 查询
+let cachedParticleColor = ''
+let cachedParticleRgb = ''
+let cachedGradient: CanvasGradient | null = null
+
+const cacheColors = () => {
   const style = getComputedStyle(document.documentElement)
-  return {
-    enabled: style.getPropertyValue('--particles-enabled').trim() !== '0',
-    particles: style.getPropertyValue('--particles-color').trim() || '90, 204, 255',
-    bgStart: style.getPropertyValue('--particles-bg-start').trim() || '#0a0f1a',
-    bgEnd: style.getPropertyValue('--particles-bg-end').trim() || '#0b1626'
+  const rgb = style.getPropertyValue('--particles-color').trim() || '90, 204, 255'
+  const bgStart = style.getPropertyValue('--particles-bg-start').trim() || '#0a0f1a'
+  const bgEnd = style.getPropertyValue('--particles-bg-end').trim() || '#0b1626'
+  cachedParticleRgb = rgb
+  cachedParticleColor = `rgba(${rgb}, 0.35)`
+  if (ctx) {
+    cachedGradient = ctx.createLinearGradient(0, 0, 0, h)
+    cachedGradient.addColorStop(0, bgStart)
+    cachedGradient.addColorStop(1, bgEnd)
   }
 }
 
@@ -68,28 +74,18 @@ class Particle {
 const renderFrame = () => {
   if (!ctx) return
 
-  const colors = getThemeColors()
-
   ctx.clearRect(0, 0, w, h)
 
-  // 绘制背景渐变
-  const grd = ctx.createLinearGradient(0, 0, 0, h)
-  grd.addColorStop(0, colors.bgStart)
-  grd.addColorStop(1, colors.bgEnd)
-  ctx.fillStyle = grd
-  ctx.fillRect(0, 0, w, h)
-
-  // 如果粒子被禁用，只绘制背景
-  if (!colors.enabled) {
-    return
+  // 绘制缓存的背景渐变
+  if (cachedGradient) {
+    ctx.fillStyle = cachedGradient
+    ctx.fillRect(0, 0, w, h)
   }
-
-  const particleColor = `rgba(${colors.particles}, 0.35)`
 
   // 绘制粒子和连线
   particles.forEach((p, i) => {
     if (shouldAnimate) p.update(w, h)
-    p.draw(ctx!, particleColor)
+    p.draw(ctx!, cachedParticleColor)
 
     for (let j = i + 1; j < particles.length; j += 1) {
       const p2 = particles[j]
@@ -98,7 +94,7 @@ const renderFrame = () => {
       const dist = Math.sqrt(dx * dx + dy * dy)
 
       if (dist < connectionDistance) {
-        ctx!.strokeStyle = `rgba(${colors.particles}, ${0.16 - dist / 1000})`
+        ctx!.strokeStyle = `rgba(${cachedParticleRgb}, ${0.16 - dist / 1000})`
         ctx!.lineWidth = 0.5
         ctx!.beginPath()
         ctx!.moveTo(p.x, p.y)
@@ -137,23 +133,12 @@ const initParticles = () => {
   // 取消之前的动画帧
   cancelAnimationFrame(animationFrameId)
 
+  // 缓存颜色和渐变
+  cacheColors()
+
   // 开始渲染
   renderFrame()
 }
-
-// 监听主题变化，重新渲染
-watch(() => themeStore.themeName, () => {
-  // 主题变化时，需要等待浏览器重新计算样式后再读取 CSS 变量
-  // 使用双重 requestAnimationFrame 确保样式已更新
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      if (ctx) {
-        // 无论动画是否运行，都强制重绘一帧以更新背景色
-        renderFrame()
-      }
-    })
-  })
-})
 
 onMounted(() => {
   // 延迟初始化，确保布局已完成
@@ -167,6 +152,9 @@ onMounted(() => {
 
     w = cvs.width = window.innerWidth
     h = cvs.height = window.innerHeight
+
+    // 重建渐变（高度变化）
+    cacheColors()
 
     if (!shouldAnimate) {
       renderFrame()

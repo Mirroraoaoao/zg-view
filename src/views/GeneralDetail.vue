@@ -129,23 +129,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
 import { overallData } from '../data/mockDashboard'
+import { useResponsiveScale } from '../composables/useResponsiveScale'
+import { getThemeColors } from '../utils/chartTheme'
 
-const scale = ref(1)
+const { scaleNumber, scaleFloat } = useResponsiveScale()
+const colors = getThemeColors()
 const primaryMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '营收与利润'))
 const contributionMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '贡献与产值'))
 const costMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '费用压降'))
-
-const updateScale = () => {
-  const next = window.innerWidth / 1920
-  scale.value = Math.min(1.9, Math.max(1, next))
-}
-
-const scaleNumber = (value: number, min = value) => Math.max(min, Math.round(value * scale.value))
-const scaleFloat = (value: number, min = value) => Math.max(min, Math.round(value * scale.value * 10) / 10)
 
 const operatingTrendOption = computed(() => ({
   tooltip: { trigger: 'axis' },
@@ -158,13 +153,13 @@ const operatingTrendOption = computed(() => ({
   xAxis: {
     type: 'category',
     data: overallData.operating.trend.labels,
-    axisLine: { lineStyle: { color: '#2a3b54' } },
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) }
+    axisLine: { lineStyle: { color: colors.axisLine } },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) }
   },
   yAxis: {
     type: 'value',
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
-    splitLine: { lineStyle: { color: '#1d2a3d' } }
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
+    splitLine: { lineStyle: { color: colors.splitLine } }
   },
   series: [
     {
@@ -172,7 +167,7 @@ const operatingTrendOption = computed(() => ({
       data: overallData.operating.trend.values,
       smooth: true,
       lineStyle: {
-        color: '#f8c547',
+        color: colors.target,
         width: scaleFloat(2.4, 2),
         shadowBlur: scaleNumber(14, 10),
         shadowColor: 'rgba(248, 197, 71, 0.55)'
@@ -211,13 +206,13 @@ const assetTrendOption = computed(() => ({
   xAxis: {
     type: 'category',
     data: overallData.assetScale.trend.labels,
-    axisLine: { lineStyle: { color: '#2a3b54' } },
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) }
+    axisLine: { lineStyle: { color: colors.axisLine } },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) }
   },
   yAxis: {
     type: 'value',
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
-    splitLine: { lineStyle: { color: '#1d2a3d' } }
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
+    splitLine: { lineStyle: { color: colors.splitLine } }
   },
   series: [
     {
@@ -225,7 +220,7 @@ const assetTrendOption = computed(() => ({
       data: overallData.assetScale.trend.values,
       smooth: true,
       lineStyle: {
-        color: '#36f1cd',
+        color: colors.profit,
         width: scaleFloat(2.4, 2),
         shadowBlur: scaleNumber(14, 10),
         shadowColor: 'rgba(54, 241, 205, 0.5)'
@@ -264,13 +259,13 @@ const fundFlowOption = computed(() => ({
   xAxis: {
     type: 'category',
     data: overallData.fundStatus.flow.labels,
-    axisLine: { lineStyle: { color: '#2a3b54' } },
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) }
+    axisLine: { lineStyle: { color: colors.axisLine } },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) }
   },
   yAxis: {
     type: 'value',
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
-    splitLine: { lineStyle: { color: '#1d2a3d' } }
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
+    splitLine: { lineStyle: { color: colors.splitLine } }
   },
   series: [
     {
@@ -279,11 +274,11 @@ const fundFlowOption = computed(() => ({
       itemStyle: {
         color: (params: any) => {
           const gradients = [
-            ['#36f1cd', 'rgba(54, 241, 205, 0.25)'],
-            ['#ff6b6b', 'rgba(255, 107, 107, 0.25)'],
-            ['#7cf29a', 'rgba(124, 242, 154, 0.25)']
+            [colors.profit, 'rgba(54, 241, 205, 0.25)'],
+            [colors.cost, 'rgba(255, 107, 107, 0.25)'],
+            [colors.performance, 'rgba(124, 242, 154, 0.25)']
           ]
-          const colors = gradients[params.dataIndex] ?? ['#5accff', 'rgba(90, 204, 255, 0.25)']
+          const barColors = gradients[params.dataIndex] ?? [colors.revenue, 'rgba(90, 204, 255, 0.25)']
           return {
             type: 'linear',
             x: 0,
@@ -291,20 +286,20 @@ const fundFlowOption = computed(() => ({
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: colors[0] },
-              { offset: 1, color: colors[1] }
+              { offset: 0, color: barColors[0] },
+              { offset: 1, color: barColors[1] }
             ]
           }
         },
         shadowBlur: scaleNumber(12, 10),
-        shadowColor: 'rgba(12, 24, 40, 0.6)'
+        shadowColor: colors.chartShadow
       },
       barWidth: scaleNumber(28, 24),
       borderRadius: [scaleNumber(8, 6), scaleNumber(8, 6), 0, 0],
       label: {
         show: true,
         position: 'top',
-        color: '#e6f1ff',
+        color: colors.textPrimary,
         fontSize: scaleNumber(11, 11),
         fontFamily: "'Chakra Petch', 'Noto Sans SC', sans-serif"
       },
@@ -319,16 +314,16 @@ const talentPieOption = computed(() => ({
     {
       type: 'pie',
       radius: ['45%', '70%'],
-      label: { color: '#e6f1ff', fontSize: scaleNumber(11, 11), formatter: '{b} {d}%' },
+      label: { color: colors.textPrimary, fontSize: scaleNumber(11, 11), formatter: '{b} {d}%' },
       labelLine: {
         length: scaleNumber(10, 10),
         length2: scaleNumber(10, 10),
-        lineStyle: { color: 'rgba(166, 186, 210, 0.6)' }
+        lineStyle: { color: colors.labelLine }
       },
       itemStyle: {
         shadowBlur: scaleNumber(12, 10),
-        shadowColor: 'rgba(12, 24, 40, 0.6)',
-        borderColor: 'rgba(7, 14, 24, 0.6)',
+        shadowColor: colors.chartShadow,
+        borderColor: colors.chartBorder,
         borderWidth: 1
       },
       emphasis: {
@@ -343,15 +338,6 @@ const talentPieOption = computed(() => ({
     }
   ]
 }))
-
-onMounted(() => {
-  updateScale()
-  window.addEventListener('resize', updateScale)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateScale)
-})
 </script>
 
 <style scoped lang="scss">

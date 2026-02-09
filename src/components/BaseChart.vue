@@ -6,13 +6,11 @@
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import { applyChartTheme } from '../utils/chartTheme'
-import { useThemeStore } from '../stores/theme'
 
 const props = defineProps<{
   options: any
 }>()
 
-const themeStore = useThemeStore()
 const chartRef = ref<HTMLElement | null>(null)
 let chart: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
@@ -49,8 +47,10 @@ const initChart = () => {
   chart.setOption(applyChartTheme(normalizeOptions(props.options)), true)
 }
 
+let resizeTimer = 0
 const resizeHandler = () => {
-  chart?.resize()
+  clearTimeout(resizeTimer)
+  resizeTimer = window.setTimeout(() => { chart?.resize() }, 100)
 }
 
 // 监听 options 变化
@@ -63,16 +63,6 @@ watch(() => props.options, (newOptions) => {
   }
 }, { deep: true })
 
-// 监听主题变化，重新应用图表主题
-watch(() => themeStore.themeName, () => {
-  nextTick(() => {
-    if (chart) {
-      // 重新应用主题后的配置
-      chart.setOption(applyChartTheme(normalizeOptions(props.options)), true)
-    }
-  })
-})
-
 onMounted(() => {
   // Use nextTick to ensure DOM is fully rendered
   nextTick(() => {
@@ -80,9 +70,7 @@ onMounted(() => {
     setTimeout(initChart, 50)
   })
 
-  window.addEventListener('resize', resizeHandler)
-
-  // Use ResizeObserver to handle dynamic size changes
+  // Use ResizeObserver to handle all size changes (including window resize)
   if (chartRef.value) {
     resizeObserver = new ResizeObserver(() => {
       resizeHandler()
@@ -92,7 +80,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', resizeHandler)
+  clearTimeout(resizeTimer)
   resizeObserver?.disconnect()
   chart?.dispose()
 })

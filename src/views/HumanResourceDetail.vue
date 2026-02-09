@@ -150,7 +150,9 @@ import { computed } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
 import { hrData } from '../data/mockDashboard'
+import { getThemeColors } from '../utils/chartTheme'
 
+const colors = getThemeColors()
 const personnelSummary = computed(() => hrData.summary.slice(0, 3))
 
 const clampPercent = (value: string) => {
@@ -169,8 +171,8 @@ const talentOption = computed(() => ({
       type: 'pie',
       radius: ['44%', '68%'],
       center: ['44%', '50%'],
-      label: { color: '#e6f1ff', fontSize: 11, formatter: '{b} {d}%' },
-      labelLine: { lineStyle: { color: 'rgba(147,166,194,0.55)' } },
+      label: { color: colors.textPrimary, fontSize: 11, formatter: '{b} {d}%' },
+      labelLine: { lineStyle: { color: colors.labelLine } },
       data: hrData.talentStructure.map((item) => ({
         value: item.value,
         name: item.name,

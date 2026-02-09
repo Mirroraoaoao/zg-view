@@ -1,4 +1,4 @@
-﻿type ChartOption = Record<string, any>
+type ChartOption = Record<string, any>
 
 type ChartTheme = {
   textStyle: ChartOption
@@ -18,8 +18,10 @@ type ChartTheme = {
   minLegendSize: number
 }
 
-// 浠?CSS 鍙橀噺鍔ㄦ€佽幏鍙栦富棰樿壊
-const getThemeColors = () => {
+// 从 CSS 变量动态获取主题色（带缓存，仅首次读取 DOM）
+let _cachedColors: ReturnType<typeof _readThemeColors> | null = null
+
+const _readThemeColors = () => {
   if (typeof window === 'undefined') {
     return {
       revenue: '#5accff',
@@ -29,17 +31,19 @@ const getThemeColors = () => {
       performance: '#7cf29a',
       textPrimary: '#e6f1ff',
       textSecondary: '#a6bad2',
+      textMuted: '#6b7a8f',
       bgPanel: 'rgba(7, 14, 24, 0.92)',
       border: 'rgba(90, 204, 255, 0.45)',
-      axisLine: '#2f425a',
-      splitLine: 'rgba(52, 72, 98, 0.35)'
+      axisLine: '#2a3b54',
+      splitLine: '#1d2a3d',
+      labelLine: 'rgba(166, 186, 210, 0.6)',
+      chartShadow: 'rgba(12, 24, 40, 0.6)',
+      chartBorder: 'rgba(7, 14, 24, 0.6)'
     }
   }
 
   const style = getComputedStyle(document.documentElement)
   const get = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback
-
-  // 妫€娴嬪綋鍓嶆槸鍚︿负娴呰壊涓婚
 
   return {
     revenue: get('--chart-revenue', get('--accent-blue', '#5accff')),
@@ -52,12 +56,25 @@ const getThemeColors = () => {
     textMuted: get('--text-muted', '#6b7a8f'),
     bgPanel: get('--bg-panel', 'rgba(7, 14, 24, 0.92)'),
     border: get('--panel-border', 'rgba(90, 204, 255, 0.45)'),
-    axisLine: get('--panel-border', '#2f425a'),
-    splitLine: 'rgba(52, 72, 98, 0.35)'
+    axisLine: get('--chart-axis-line', '#2a3b54'),
+    splitLine: get('--chart-split-line', '#1d2a3d'),
+    labelLine: get('--chart-label-line', 'rgba(166, 186, 210, 0.6)'),
+    chartShadow: get('--chart-shadow', 'rgba(12, 24, 40, 0.6)'),
+    chartBorder: get('--chart-border', 'rgba(7, 14, 24, 0.6)')
   }
 }
 
-// 闈欐€佽涔夎壊鏄犲皠 (鐢ㄤ簬 resolveSemanticKey)
+export const getThemeColors = () => {
+  if (!_cachedColors) {
+    _cachedColors = _readThemeColors()
+  }
+  return _cachedColors
+}
+
+/** Portal.vue 使用的别名 */
+export const getChartColors = getThemeColors
+
+// 静态语义色映射
 export const semanticColors = {
   revenue: '#5accff',
   profit: '#36f1cd',
@@ -84,15 +101,15 @@ const resolveSemanticKey = (series: ChartOption): SemanticKey | null => {
 
   const name = String(series.name ?? '')
   if (!name) return null
-  if (name.includes('钀ユ敹') || name.includes('鏀跺叆')) return 'revenue'
-  if (name.includes('鍒╂鼎') || name.includes('鏀剁泭')) return 'profit'
-  if (name.includes('鎴愭湰') || name.includes('璐圭敤')) return 'cost'
-  if (name.includes('鐩爣') || name.includes('瀹屾垚') || name.includes('杈炬垚')) return 'target'
-  if (name.includes('缁╂晥') || name.includes('琛ㄧ幇')) return 'performance'
-  if (name.includes('鐜伴噾娴佸叆')) return 'cashIn'
-  if (name.includes('鐜伴噾娴佸嚭')) return 'cashOut'
-  if (name.includes('鍑€娴侀噺')) return 'netCash'
-  if (name.includes('瀵规爣') || name.includes('鍩哄噯')) return 'benchmark'
+  if (name.includes('营收') || name.includes('收入')) return 'revenue'
+  if (name.includes('利润') || name.includes('收益')) return 'profit'
+  if (name.includes('成本') || name.includes('费用')) return 'cost'
+  if (name.includes('目标') || name.includes('完成') || name.includes('达成')) return 'target'
+  if (name.includes('绩效') || name.includes('表现')) return 'performance'
+  if (name.includes('现金流入')) return 'cashIn'
+  if (name.includes('现金流出')) return 'cashOut'
+  if (name.includes('净流量')) return 'netCash'
+  if (name.includes('对标') || name.includes('基准')) return 'benchmark'
   return null
 }
 
@@ -100,7 +117,6 @@ const resolveSemanticColor = (series: ChartOption) => {
   const key = resolveSemanticKey(series)
   if (!key) return null
 
-  // 鍔ㄦ€佽幏鍙栧綋鍓嶄富棰樼殑棰滆壊
   const colors = getThemeColors()
   const colorMap: Record<SemanticKey, string> = {
     revenue: colors.revenue,
@@ -182,7 +198,7 @@ const buildChartTheme = (): ChartTheme => {
         labelLine: {
           length: scaleNumber(10),
           length2: scaleNumber(10),
-          lineStyle: { color: 'rgba(166, 186, 210, 0.6)' }
+          lineStyle: { color: colors.labelLine }
         },
         emphasis: { scale: true }
       }
@@ -349,7 +365,6 @@ const applySeriesTheme = (seriesOption: any, theme: ChartTheme) => {
     }
 
     if (seriesType === 'pie') {
-      // 搴旂敤楗煎浘鏍囩棰滆壊
       const label = isPlainObject(item.label) ? { ...item.label } : {}
       if (label.color === undefined) {
         label.color = theme.textStyle.color
@@ -364,7 +379,6 @@ const applySeriesTheme = (seriesOption: any, theme: ChartTheme) => {
     }
 
     if (seriesType === 'gauge') {
-      // 搴旂敤 gauge 鍥捐〃 detail 棰滆壊
       const detail = isPlainObject(item.detail) ? { ...item.detail } : {}
       if (detail.color === undefined) {
         detail.color = theme.textStyle.color
@@ -433,6 +447,3 @@ export const applyChartTheme = (options: ChartOption = {}) => {
 
   return themed
 }
-
-
-

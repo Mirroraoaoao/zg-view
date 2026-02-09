@@ -1,6 +1,6 @@
 /**
- * Mock 数据重导出（向后兼容）
- * @deprecated 请直接从各模块文件或 index.ts 导入
+ * Mock 数据统一导出
+ * 兼容旧的导入方式，同时支持按模块导入
  */
 
 export { portalData } from './portal'

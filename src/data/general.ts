@@ -1,0 +1,92 @@
+export const overallData = {
+  hierarchy: {
+    l1: ['集团营收数据', '经营目标达成率(不含重点工作，只计算经济指标)']
+  },
+  operating: {
+    metrics: [
+      { label: '总营收', value: '￥ 1,452 亿', trend: '+6.4%', trendType: 'up', section: '营收与利润' },
+      { label: '境外营收', value: '￥ 186 亿', trend: '+4.2%', trendType: 'up', section: '营收与利润' },
+      { label: '利润总额', value: '￥ 328.5 亿', trend: '+15%', trendType: 'up', section: '营收与利润' },
+      { label: '净利润', value: '￥ 210.4 亿', trend: '+9%', trendType: 'up', section: '营收与利润' },
+      { label: '负债总额', value: '￥ 1,025 亿', trend: '+3.2%', trendType: 'up', section: '营收与利润' },
+      { label: '资产负债率', value: '48.7%', trend: '-1.2%', trendType: 'down', section: '营收与利润' },
+      { label: '经营性现金流净额', value: '￥ 86.5 亿', trend: '+5.1%', trendType: 'up', section: '营收与利润' },
+      { label: '人效比', value: '116.1 万/人', trend: '+2.1%', trendType: 'up', section: '营收与利润' },
+      { label: '珠琴澳三地特色产业集群总产值', value: '￥ 860 亿', trend: '+7.2%', trendType: 'up', section: '贡献与产值' },
+      { label: '战略新兴产业规模', value: '￥ 420 亿', trend: '+9.6%', trendType: 'up', section: '贡献与产值' },
+      { label: '累计GDP贡献值（分板块）', value: '￥ 980 亿', trend: '+5.8%', trendType: 'up', section: '贡献与产值' },
+      { label: '税收贡献（分板块）', value: '￥ 37.2 亿', trend: '+6.2%', trendType: 'up', section: '贡献与产值' },
+      { label: '带动社会消费品零售额', value: '￥ 260 亿', trend: '+4.5%', trendType: 'up', section: '贡献与产值' },
+      { label: '生产性服务占比', value: '36.5%', trend: '+1.2%', trendType: 'up', section: '贡献与产值' },
+      { label: '费用压降情况（人力成本）', value: '-4.2%', trend: '+0.6%', trendType: 'up', section: '费用压降' },
+      { label: '费用压降情况（财务费用）', value: '-3.1%', trend: '+0.4%', trendType: 'up', section: '费用压降' },
+      { label: '费用压降情况（采购费用）', value: '-5.6%', trend: '+0.9%', trendType: 'up', section: '费用压降' },
+      { label: '费用压降情况（工程建设成本）', value: '-2.8%', trend: '+0.3%', trendType: 'up', section: '费用压降' },
+      { label: '费用压降情况（其他期间费用）', value: '-3.7%', trend: '+0.5%', trendType: 'up', section: '费用压降' }
+    ],
+    trend: {
+      labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      values: [108, 115, 118, 125, 120, 128, 122, 130, 126, 132, 128, 200]
+    }
+  },
+  annualCompletion: {
+    group: [
+      { label: '经营目标达成率', value: 86 }
+    ],
+    subsidiaries: [] as Array<{ label: string; value: number }>,
+    note: '经营目标达成率 86%，需关注现金流与费用压降节奏。'
+  },
+  assetScale: {
+    total: '￥ 980 亿',
+    growth: '同比 +5.8%',
+    increase: '战略新兴产业规模 ￥ 420 亿',
+    categories: [
+      { name: '制造板块', value: 38, color: '#5accff' },
+      { name: '服务板块', value: 34, color: '#36f1cd' },
+      { name: '投资板块', value: 28, color: '#f8c547' }
+    ],
+    tags: ['制造板块 ￥ 372 亿', '服务板块 ￥ 333 亿', '投资板块 ￥ 275 亿'],
+    trend: {
+      labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+      values: [620, 680, 720, 800, 900, 980]
+    }
+  },
+  investment: {
+    progress: [
+      { label: '人力成本压降', value: 82 },
+      { label: '财务费用压降', value: 76 },
+      { label: '采购费用压降', value: 84 },
+      { label: '工程建设成本压降', value: 72 },
+      { label: '其他期间费用压降', value: 78 }
+    ],
+    kpis: [
+      { label: '经营性现金流净额', value: '￥ 86.5 亿' },
+      { label: '人效比', value: '116.1 万/人' }
+    ]
+  },
+  fundStatus: {
+    summary: [
+      { label: '税收贡献（分板块）', value: '￥ 37.2 亿', tone: 'normal' },
+      { label: '带动社会消费品零售额', value: '￥ 260 亿', tone: 'up' },
+      { label: '生产性服务占比', value: '36.5%', tone: 'up' },
+      { label: '累计GDP贡献值（分板块）', value: '￥ 980 亿', tone: 'normal' }
+    ],
+    flow: {
+      labels: ['税收贡献（分板块）', '带动社会消费品零售额', '生产性服务占比'],
+      values: [37.2, 260, 36.5]
+    }
+  },
+  hrStatus: {
+    summary: [
+      { label: '珠琴澳三地特色产业集群总产值', value: '￥ 860 亿' },
+      { label: '战略新兴产业规模', value: '￥ 420 亿' },
+      { label: '累计GDP贡献值（分板块）', value: '￥ 980 亿' }
+    ],
+    talent: [
+      { value: 36, name: '珠海', color: '#5accff' },
+      { value: 28, name: '琴澳', color: '#36f1cd' },
+      { value: 22, name: '澳门', color: '#f8c547' },
+      { value: 14, name: '其他', color: '#6a7b96' }
+    ]
+  }
+}

@@ -52,19 +52,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
 import { financeData } from '../data/mockDashboard'
+import { useResponsiveScale } from '../composables/useResponsiveScale'
+import { getThemeColors } from '../utils/chartTheme'
 
-const scale = ref(1)
-
-const updateScale = () => {
-  const next = window.innerWidth / 1920
-  scale.value = Math.min(1.9, Math.max(1, next))
-}
-
-const scaleNumber = (value: number, min = value) => Math.max(min, Math.round(value * scale.value))
+const { scaleNumber } = useResponsiveScale()
+const colors = getThemeColors()
 
 const benchmarkRows = computed(() =>
   financeData.benchmark.labels.map((label, index) => ({
@@ -83,13 +79,13 @@ const benchmarkOption = computed(() => ({
   },
   xAxis: {
     type: 'value',
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
     splitLine: { show: false }
   },
   yAxis: {
     type: 'category',
     data: financeData.benchmark.labels,
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
     axisLine: { show: false },
     axisTick: { show: false }
   },
@@ -100,7 +96,7 @@ const benchmarkOption = computed(() => ({
       data: financeData.benchmark.values,
       barWidth: scaleNumber(14, 10),
       itemStyle: { borderRadius: scaleNumber(6, 4) },
-      label: { show: true, position: 'right', color: '#e6f1ff', fontSize: scaleNumber(11, 11) }
+      label: { show: true, position: 'right', color: colors.textPrimary, fontSize: scaleNumber(11, 11) }
     }
   ]
 }))
@@ -115,13 +111,13 @@ const budgetOption = computed(() => ({
   xAxis: {
     type: 'category',
     data: financeData.budget.chart.labels,
-    axisLine: { lineStyle: { color: '#2a3b54' } },
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) }
+    axisLine: { lineStyle: { color: colors.axisLine } },
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) }
   },
   yAxis: {
     type: 'value',
-    axisLabel: { color: '#a6bad2', fontSize: scaleNumber(11, 11) },
-    splitLine: { lineStyle: { color: '#1d2a3d' } }
+    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
+    splitLine: { lineStyle: { color: colors.splitLine } }
   },
   series: [
     {
@@ -133,16 +129,6 @@ const budgetOption = computed(() => ({
     }
   ]
 }))
-
-
-onMounted(() => {
-  updateScale()
-  window.addEventListener('resize', updateScale)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateScale)
-})
 </script>
 
 <style scoped lang="scss">

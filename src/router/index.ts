@@ -1,14 +1,5 @@
 ﻿import { createRouter, createWebHistory } from 'vue-router'
 import Portal from '../views/Portal.vue'
-import OverallDashboard from '../views/GeneralDetail.vue'
-import AdminDetail from '../views/AdminDetail.vue'
-import FinanceDetail from '../views/FinanceDetail.vue'
-import TreasuryDetail from '../views/TreasuryDetail.vue'
-import InvestmentDetail from '../views/InvestmentDetail.vue'
-import HumanResourceDetail from '../views/HumanResourceDetail.vue'
-import AssetDetail from '../views/AssetDetail.vue'
-import OperationDetail from '../views/ProjectDetail.vue'
-import KeyProjectsDetail from '../views/KeyProjectsDetail.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,47 +12,47 @@ const router = createRouter({
     {
       path: '/overall',
       name: 'overall',
-      component: OverallDashboard
+      component: () => import('../views/GeneralDetail.vue')
     },
     {
       path: '/admin',
       name: 'admin',
-      component: AdminDetail
+      component: () => import('../views/AdminDetail.vue')
     },
     {
       path: '/finance',
       name: 'finance',
-      component: FinanceDetail
+      component: () => import('../views/FinanceDetail.vue')
     },
     {
       path: '/treasury',
       name: 'treasury',
-      component: TreasuryDetail
+      component: () => import('../views/TreasuryDetail.vue')
     },
     {
       path: '/investment',
       name: 'investment',
-      component: InvestmentDetail
+      component: () => import('../views/InvestmentDetail.vue')
     },
     {
       path: '/hr',
       name: 'hr',
-      component: HumanResourceDetail
+      component: () => import('../views/HumanResourceDetail.vue')
     },
     {
       path: '/asset',
       name: 'asset',
-      component: AssetDetail
+      component: () => import('../views/AssetDetail.vue')
     },
     {
       path: '/operation',
       name: 'operation',
-      component: OperationDetail
+      component: () => import('../views/ProjectDetail.vue')
     },
     {
       path: '/projects',
       name: 'projects',
-      component: KeyProjectsDetail
+      component: () => import('../views/KeyProjectsDetail.vue')
     }
   ]
 })

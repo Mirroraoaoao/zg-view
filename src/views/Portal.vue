@@ -132,29 +132,13 @@ import topDecorSecondary from '../assets/1678758747712-_gUPJr0X.png'
 import bottomDecor from '../assets/1678758741007-W8v4h8Xj.png'
 import brandLogoAlt from '../assets/logo (2).png'
 import { portalData } from '../data/mockDashboard'
+import { useResponsiveScale } from '../composables/useResponsiveScale'
+import { getChartColors } from '../utils/chartTheme'
 
 const router = useRouter()
 const now = ref(new Date())
-const scale = ref(1)
+const { scaleNumber, scaleFloat } = useResponsiveScale()
 let timer = 0
-
-// 获取当前主题的图表颜色
-const getChartColors = () => {
-  const style = getComputedStyle(document.documentElement)
-  const get = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback
-
-  return {
-    bgPanel: get('--bg-panel', 'rgba(9, 18, 32, 0.86)'),
-    border: get('--panel-border', 'rgba(90, 204, 255, 0.4)'),
-    textPrimary: get('--text-primary', '#e6f1ff'),
-    textSecondary: get('--text-secondary', '#9fb3c9'),
-    axisLine: '#2f425a',
-    splitLine: 'rgba(52, 72, 98, 0.35)',
-    areaEnd: 'rgba(12, 24, 40, 0)',
-    revenue: get('--chart-revenue', '#5accff'),
-    profit: get('--chart-profit', '#36f1cd')
-  }
-}
 
 const { header, hero, heroCharts, leftModules, rightModules } = portalData
 const headerTitle = header?.title?.trim() || '集团数据驾驶舱'
@@ -169,14 +153,6 @@ const timeText = computed(() => {
 const dateTimeText = computed(() => {
   return `${now.value.getFullYear()}-${pad(now.value.getMonth() + 1)}-${pad(now.value.getDate())} ${timeText.value}`
 })
-
-const updateScale = () => {
-  const next = window.innerWidth / 1920
-  scale.value = Math.min(1.9, Math.max(1, next))
-}
-
-const scaleNumber = (value: number, min = value) => Math.max(min, Math.round(value * scale.value))
-const scaleFloat = (value: number, min = value) => Math.max(min, Math.round(value * scale.value * 10) / 10)
 
 const heroTrendOption = computed(() => {
   const colors = getChartColors()
@@ -228,7 +204,7 @@ const heroTrendOption = computed(() => {
             y2: 1,
             colorStops: [
               { offset: 0, color: colors.revenue + '30' },
-              { offset: 1, color: colors.areaEnd }
+              { offset: 1, color: 'rgba(12, 24, 40, 0)' }
             ]
           }
         },
@@ -243,25 +219,19 @@ const go = (name: string) => {
 }
 
 onMounted(() => {
-  updateScale()
-  window.addEventListener('resize', updateScale)
   timer = window.setInterval(() => {
     now.value = new Date()
   }, 1000)
 
   // 强制触发重绘，解决首次加载时某些元素不渲染的问题
-  // 使用双重 requestAnimationFrame 确保在下一帧渲染后执行
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      updateScale()
-      // 触发一次 resize 事件，强制所有依赖 resize 的组件重新计算
       window.dispatchEvent(new Event('resize'))
     })
   })
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', updateScale)
   window.clearInterval(timer)
 })
 </script>

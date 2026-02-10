@@ -1,8 +1,17 @@
-﻿<template>
+<template>
   <SubScreenLayout title="经营数据" subtitle="Operating Data" meta="数据更新时间 08:30">
-    <div class="overall-grid">
-      <section class="panel profit-panel">
-        <h3 class="panel-title">L1：集团营收数据</h3>
+    <div v-if="loading" class="overall-grid overall-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--profit" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--asset" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--fund" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--invest" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--performance" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--hr" />
+    </div>
+
+    <div v-else class="overall-grid">
+      <section class="panel profit-panel panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：集团营收数据" />
         <div class="profit-body">
           <div class="profit-sections">
             <div class="profit-section">
@@ -37,13 +46,13 @@
             </div>
           </div>
           <div class="chart">
-            <BaseChart :options="operatingTrendOption" />
+            <BaseChart :options="operatingTrendOption" group="overall-link" ariaLabel="集团营收数据趋势折线图" />
           </div>
         </div>
       </section>
 
-      <section class="panel asset-panel">
-        <h3 class="panel-title">累计GDP贡献值（分板块）</h3>
+      <section class="panel asset-panel panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="累计GDP贡献值（分板块）" />
         <div class="asset-summary">
           <div>
             <div class="asset-value">{{ overallData.assetScale.total }}</div>
@@ -54,12 +63,12 @@
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="assetTrendOption" />
+          <BaseChart :options="assetTrendOption" group="overall-link" ariaLabel="累计GDP贡献值趋势折线图" />
         </div>
       </section>
 
-      <section class="panel fund-panel">
-        <h3 class="panel-title">税收与社会贡献</h3>
+      <section class="panel fund-panel panel-animate-in" :style="stagger[2]">
+        <PanelHeader title="税收与社会贡献" />
         <div class="fund-summary">
           <div v-for="item in overallData.fundStatus.summary" :key="item.label" class="fund-item">
             <span>{{ item.label }}</span>
@@ -67,12 +76,12 @@
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="fundFlowOption" />
+          <BaseChart :options="fundFlowOption" group="overall-link" ariaLabel="税收与社会贡献流量柱状图" />
         </div>
       </section>
 
-      <section class="panel invest-panel">
-        <h3 class="panel-title">费用压降情况</h3>
+      <section class="panel invest-panel panel-animate-in" :style="stagger[3]">
+        <PanelHeader title="费用压降情况" />
         <div class="invest-progress">
           <div v-for="item in overallData.investment.progress" :key="item.label" class="progress-item">
             <div class="progress-label">{{ item.label }}</div>
@@ -90,8 +99,8 @@
         </div>
       </section>
 
-      <section class="panel performance-panel">
-        <h3 class="panel-title">L1：经营目标达成率(不含重点工作，只计算经济指标)</h3>
+      <section class="panel performance-panel panel-animate-in" :style="stagger[4]">
+        <PanelHeader title="L1：经营目标达成率(不含重点工作，只计算经济指标)" />
         <div class="completion-group">
           <div v-for="item in overallData.annualCompletion.group" :key="item.label" class="completion-item">
             <div class="completion-label">{{ item.label }}</div>
@@ -112,8 +121,8 @@
         </div>
       </section>
 
-      <section class="panel hr-panel">
-        <h3 class="panel-title">珠琴澳三地特色产业集群总产值</h3>
+      <section class="panel hr-panel panel-animate-in" :style="stagger[5]">
+        <PanelHeader title="珠琴澳三地特色产业集群总产值" />
         <div class="hr-summary">
           <div v-for="item in overallData.hrStatus.summary" :key="item.label" class="hr-item">
             <span>{{ item.label }}</span>
@@ -121,7 +130,7 @@
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="talentPieOption" />
+          <BaseChart :options="talentPieOption" group="overall-link" ariaLabel="珠琴澳三地产业集群占比饼图" />
         </div>
       </section>
     </div>
@@ -129,15 +138,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { overallData } from '../data/mockDashboard'
 import { useResponsiveScale } from '../composables/useResponsiveScale'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
 import { getThemeColors } from '../utils/chartTheme'
 
 const { scaleNumber, scaleFloat } = useResponsiveScale()
 const colors = getThemeColors()
+const stagger = useStaggerAnimation(6)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
+
 const primaryMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '营收与利润'))
 const contributionMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '贡献与产值'))
 const costMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '费用压降'))
@@ -342,14 +363,6 @@ const talentPieOption = computed(() => ({
 
 <style scoped lang="scss">
 .overall-grid {
-  --space-1: clamp(6px, 0.45vw, 12px);
-  --space-2: clamp(10px, 0.7vw, 18px);
-  --space-3: clamp(14px, 0.95vw, 24px);
-  --text-xs: clamp(11px, 0.55vw, 16px);
-  --text-sm: clamp(12px, 0.7vw, 18px);
-  --text-md: clamp(14px, 0.8vw, 22px);
-  --text-lg: clamp(18px, 1vw, 26px);
-  --text-xl: clamp(22px, 1.2vw, 32px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -363,12 +376,16 @@ const talentPieOption = computed(() => ({
   gap: var(--space-2);
 }
 
-.panel-title {
-  font-size: var(--text-sm);
-  letter-spacing: 0.08em;
-  color: var(--text-primary);
-  margin-bottom: 8px;
+.overall-grid--loading {
+  pointer-events: none;
 }
+
+.skeleton-slot--profit { grid-area: profit; }
+.skeleton-slot--asset { grid-area: asset; }
+.skeleton-slot--fund { grid-area: fund; }
+.skeleton-slot--invest { grid-area: invest; }
+.skeleton-slot--performance { grid-area: performance; }
+.skeleton-slot--hr { grid-area: hr; }
 
 .profit-panel,
 .asset-panel,
@@ -430,7 +447,7 @@ const talentPieOption = computed(() => ({
   grid-template-rows: auto 1fr;
   gap: var(--space-1);
   min-height: 0;
-  padding: 8px;
+  padding: var(--space-1);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -440,12 +457,6 @@ const talentPieOption = computed(() => ({
   background: var(--subscreen-ring-bg);
   border-color: rgba(90, 204, 255, 0.22);
   box-shadow: inset 0 0 18px rgba(90, 204, 255, 0.08);
-}
-
-.section-title {
-  font-size: clamp(10px, 0.5vw, 13px);
-  color: var(--text-muted);
-  letter-spacing: 0.08em;
 }
 
 .profit-list {
@@ -503,7 +514,7 @@ const talentPieOption = computed(() => ({
 .asset-summary {
   display: grid;
   gap: var(--space-1);
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   border: 1px solid rgba(90, 204, 255, 0.2);
   background: var(--subscreen-ring-bg);
@@ -541,7 +552,7 @@ const talentPieOption = computed(() => ({
 .fund-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: var(--space-1) var(--space-2);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
   border-radius: 10px;
@@ -573,7 +584,7 @@ const talentPieOption = computed(() => ({
 .progress-item {
   display: grid;
   gap: 4px;
-  padding: 8px 10px;
+  padding: var(--space-1) var(--space-2);
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
@@ -614,7 +625,7 @@ const talentPieOption = computed(() => ({
 .completion-item {
   display: grid;
   gap: 4px;
-  padding: 8px 10px;
+  padding: var(--space-1) var(--space-2);
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
@@ -648,7 +659,7 @@ const talentPieOption = computed(() => ({
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
   border-radius: 10px;
-  padding: 8px;
+  padding: var(--space-1);
   font-size: var(--text-sm);
   color: var(--text-secondary);
   display: grid;

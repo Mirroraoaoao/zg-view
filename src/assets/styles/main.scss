@@ -1,10 +1,76 @@
-﻿/* main.scss - Command Center Theme */
+/* main.scss - Command Center Theme */
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
 :root {
   // 字体（仅在此处定义，themes.scss 不含字体变量）
   --font-body: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
   --font-display: 'Chakra Petch', 'Noto Sans SC', sans-serif;
+
+  // ── 过渡时间尺度 ──
+  --transition-fast: 0.15s;
+  --transition-normal: 0.25s;
+  --transition-slow: 0.4s;
+  --transition-slower: 0.6s;
+
+  // ── 缓动函数 ──
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  // ── 组合快捷变量 ──
+  --transition-color: color var(--transition-fast) var(--ease-default);
+  --transition-transform: transform var(--transition-normal) var(--ease-default);
+  --transition-opacity: opacity var(--transition-normal) var(--ease-default);
+  --transition-shadow: box-shadow var(--transition-normal) var(--ease-default);
+  --transition-border: border-color var(--transition-fast) var(--ease-default);
+  --transition-bg: background var(--transition-normal) var(--ease-default);
+
+  // ── 间距尺度（Space Scale）──
+  --space-1: clamp(6px, 0.5vw, 12px);
+  --space-2: clamp(10px, 0.7vw, 18px);
+  --space-3: clamp(14px, 0.9vw, 24px);
+  --space-4: clamp(18px, 1.1vw, 32px);
+  --space-5: clamp(22px, 1.3vw, 40px);
+
+  // ── 文字尺度（Type Scale）──
+  --text-xxs: clamp(9px, 0.48vw, 13px);
+  --text-xs: clamp(11px, 0.55vw, 18px);
+  --text-sm: clamp(12px, 0.65vw, 20px);
+  --text-md: clamp(14px, 0.75vw, 22px);
+  --text-lg: clamp(16px, 0.95vw, 26px);
+  --text-xl: clamp(20px, 1.1vw, 30px);
+  --text-2xl: clamp(24px, 1.4vw, 40px);
+  --text-3xl: clamp(28px, 1.8vw, 52px);
+
+  // ── 组件尺度（Component Scale）──
+  --panel-padding: clamp(14px, 0.95vw, 24px);
+  --panel-radius: clamp(14px, 1vw, 20px);
+  --panel-title-size: var(--text-sm);
+  --panel-title-gap: clamp(10px, 0.8vw, 18px);
+  --panel-title-spacing: 0.14em;
+  --panel-subtitle-size: var(--text-xs);
+  --panel-chart-gap: clamp(6px, 0.6vw, 12px);
+  --panel-table-gap: clamp(6px, 0.6vw, 12px);
+
+  --kpi-padding: var(--space-2);
+  --kpi-gap: var(--space-2);
+  --kpi-radius: clamp(10px, 0.8vw, 16px);
+  --kpi-min-width: clamp(150px, 10vw, 220px);
+  --kpi-label-size: var(--text-xs);
+  --kpi-value-size: var(--text-lg);
+  --kpi-value-gap: var(--space-1);
+
+  --chip-padding-y: clamp(4px, 0.3vw, 8px);
+  --chip-padding-x: clamp(10px, 0.6vw, 16px);
+  --chip-font-size: var(--text-xs);
+
+  --progress-height: clamp(6px, 0.5vw, 10px);
+  --table-font-size: var(--text-sm);
+  --table-head-size: var(--text-xs);
+  --table-head-spacing: 0.12em;
+  --table-row-padding-y: clamp(8px, 0.6vw, 12px);
+  --table-row-padding-x: clamp(10px, 0.7vw, 14px);
+
   // 其余 CSS 变量统一由 themes.scss 定义
 }
 
@@ -80,8 +146,8 @@ body {
 .panel {
   background: var(--bg-panel);
   border: 1px solid var(--panel-border);
-  border-radius: var(--panel-radius, 16px);
-  padding: var(--panel-padding, 16px);
+  border-radius: var(--panel-radius);
+  padding: var(--panel-padding);
   box-shadow: var(--shadow-soft);
   position: relative;
   overflow: hidden;
@@ -93,40 +159,48 @@ body {
 }
 
 .panel-title {
-  margin: 0 0 var(--panel-title-gap, 12px) 0;
+  margin: 0 0 var(--panel-title-gap) 0;
   font-family: var(--font-display);
-  font-size: var(--panel-title-size, 0.85rem);
-  letter-spacing: var(--panel-title-spacing, 0.32em);
+  font-size: var(--panel-title-size);
+  letter-spacing: var(--panel-title-spacing);
   line-height: 1.2;
   text-transform: uppercase;
-  color: var(--accent-cyan);
+  color: var(--text-primary);
 }
 
 .panel-subtitle {
   margin-top: 4px;
-  font-size: var(--panel-subtitle-size, 0.7rem);
+  font-size: var(--panel-subtitle-size);
   letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-title {
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-xxs);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .kpi-grid {
   display: grid;
-  gap: var(--kpi-gap, 12px);
-  grid-template-columns: repeat(auto-fit, minmax(var(--kpi-min-width, 140px), 1fr));
+  gap: var(--kpi-gap);
+  grid-template-columns: repeat(auto-fit, minmax(var(--kpi-min-width), 1fr));
 }
 
 .kpi {
-  padding: var(--kpi-padding, 12px);
-  border-radius: var(--kpi-radius, 12px);
+  padding: var(--kpi-padding);
+  border-radius: var(--kpi-radius);
   background: var(--kpi-bg);
   border: 1px solid var(--kpi-border);
   display: grid;
-  gap: var(--kpi-value-gap, 6px);
+  gap: var(--kpi-value-gap);
 }
 
 .kpi-label {
-  font-size: var(--kpi-label-size, 0.7rem);
+  font-size: var(--kpi-label-size);
   color: var(--text-muted);
   letter-spacing: 0.12em;
   line-height: 1.4;
@@ -134,7 +208,7 @@ body {
 
 .kpi-value {
   font-family: var(--font-display);
-  font-size: var(--kpi-value-size, 1.3rem);
+  font-size: var(--kpi-value-size);
   color: var(--text-primary);
   line-height: 1.2;
 }
@@ -143,18 +217,18 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: var(--chip-padding-y, 4px) var(--chip-padding-x, 10px);
+  padding: var(--chip-padding-y) var(--chip-padding-x);
   border-radius: 999px;
   border: 1px solid var(--chip-border);
   background: var(--chip-bg);
-  font-size: var(--chip-font-size, 0.7rem);
+  font-size: var(--chip-font-size);
   color: var(--text-secondary);
   line-height: 1.2;
 }
 
 .progress {
   width: 100%;
-  height: var(--progress-height, 6px);
+  height: var(--progress-height);
   background: var(--progress-bg);
   border-radius: 999px;
   overflow: hidden;
@@ -170,14 +244,14 @@ body {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: var(--table-font-size, 0.78rem);
+  font-size: var(--table-font-size);
   color: var(--text-secondary);
-  margin-top: var(--panel-table-gap, 8px);
+  margin-top: var(--panel-table-gap);
 }
 
 .data-table th,
 .data-table td {
-  padding: var(--table-row-padding-y, 8px) var(--table-row-padding-x, 10px);
+  padding: var(--table-row-padding-y) var(--table-row-padding-x);
   border-bottom: 1px solid var(--table-border);
   text-align: left;
   line-height: 1.5;
@@ -187,9 +261,9 @@ body {
 .data-table th {
   color: var(--text-muted);
   font-weight: 500;
-  letter-spacing: var(--table-head-spacing, 0.16em);
+  letter-spacing: var(--table-head-spacing);
   text-transform: uppercase;
-  font-size: var(--table-head-size, 0.65rem);
+  font-size: var(--table-head-size);
   background: var(--table-head-bg);
   border-bottom-color: var(--panel-border);
   position: sticky;
@@ -206,7 +280,7 @@ body {
 }
 
 .panel .chart {
-  margin-top: var(--panel-chart-gap, 8px);
+  margin-top: var(--panel-chart-gap);
 }
 
 .glass-panel {
@@ -232,6 +306,17 @@ body {
   border-radius: 999px;
 }
 
+/* 子屏：隐藏滚动条（保留滚动能力），避免大屏看板出现多条滚动条影响观感 */
+.screen * {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/旧 Edge */
+}
+
+.screen *::-webkit-scrollbar {
+  width: 0;  /* Chrome/Safari */
+  height: 0;
+}
+
 :where(button, [role='button'], a, input, select, textarea, [tabindex]):focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
@@ -247,14 +332,80 @@ body {
   word-break: break-word;
 }
 
+// ── 路由过渡：淡入淡出 ──
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-normal) var(--ease-default);
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+// ── 路由过渡：滑动淡入淡出 ──
+.slide-fade-enter-active {
+  transition: all var(--transition-normal) var(--ease-default);
+}
+.slide-fade-leave-active {
+  transition: all var(--transition-fast) var(--ease-default);
+}
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+// ── 面板入场动画 ──
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-animate-in {
+  animation: panel-enter var(--transition-slow) var(--ease-smooth) both;
+}
+
+// ── 大屏响应式断点 ──
+@media (min-width: 1920px) {
+  :root {
+    /* 1920+ 进入大屏场景：整体字号上调，提升可读性（不影响 <1920 的紧凑布局） */
+    --text-xxs: clamp(10px, 0.52vw, 14px);
+    --text-xs: clamp(12px, 0.62vw, 20px);
+    --text-sm: clamp(13px, 0.75vw, 24px);
+    --text-md: clamp(15px, 0.85vw, 26px);
+    --text-lg: clamp(18px, 1.05vw, 30px);
+    --text-xl: clamp(22px, 1.2vw, 34px);
+    --text-2xl: clamp(26px, 1.55vw, 44px);
+    --text-3xl: clamp(30px, 2vw, 56px);
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --space-1: clamp(10px, 0.5vw, 16px);
+    --space-2: clamp(14px, 0.7vw, 24px);
+    --text-sm: clamp(14px, 0.65vw, 24px);
+    --text-md: clamp(16px, 0.75vw, 28px);
+    --panel-padding: clamp(18px, 0.95vw, 32px);
+  }
+}
+
+@media (min-width: 3840px) {
+  :root {
+    --space-2: clamp(18px, 0.7vw, 30px);
+    --text-lg: clamp(20px, 0.95vw, 34px);
+    --panel-padding: clamp(22px, 0.95vw, 40px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

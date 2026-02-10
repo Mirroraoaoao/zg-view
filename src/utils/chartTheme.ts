@@ -365,16 +365,49 @@ const applySeriesTheme = (seriesOption: any, theme: ChartTheme) => {
     }
 
     if (seriesType === 'pie') {
+      const colors = getThemeColors()
+
       const label = isPlainObject(item.label) ? { ...item.label } : {}
-      if (label.color === undefined) {
-        label.color = theme.textStyle.color
-      }
+      if (label.color === undefined) label.color = theme.textStyle.color
+      if (label.fontFamily === undefined) label.fontFamily = theme.textStyle.fontFamily
+      if (label.fontSize === undefined) label.fontSize = theme.minLabelSize
+      if (label.formatter === undefined) label.formatter = '{b} {d}%'
       next.label = label
-      if (!isPlainObject(item.labelLine)) {
-        next.labelLine = theme.series.pie.labelLine
-      }
+
+      const labelLine = isPlainObject(item.labelLine) ? { ...item.labelLine } : {}
+      next.labelLine = mergeOptions(theme.series.pie.labelLine, labelLine)
+
+      // 默认开启避让，避免小屏/密集扇区 label 重叠导致的“糊成一团”
+      ;(next as any).avoidLabelOverlap ??= true
+      ;(next as any).minShowLabelAngle ??= 6
+      ;(next as any).labelLayout ??= { hideOverlap: true, moveOverlap: 'shiftY' }
+
+      const itemStyle = isPlainObject(item.itemStyle) ? { ...item.itemStyle } : {}
+      if (itemStyle.borderWidth === undefined) itemStyle.borderWidth = 1
+      if (itemStyle.borderColor === undefined) itemStyle.borderColor = colors.chartBorder
+      if (itemStyle.shadowBlur === undefined) itemStyle.shadowBlur = Math.max(10, Math.round(theme.minLabelSize * 1.2))
+      if (itemStyle.shadowColor === undefined) itemStyle.shadowColor = colors.chartShadow
+      next.itemStyle = itemStyle
+
       if (next.emphasis === undefined) {
         next.emphasis = theme.series.pie.emphasis
+      } else if (isPlainObject(next.emphasis)) {
+        next.emphasis = mergeOptions(theme.series.pie.emphasis, next.emphasis)
+      }
+
+      if (isPlainObject(next.emphasis)) {
+        const emph = next.emphasis as ChartOption
+        if (!isPlainObject(emph.label)) {
+          emph.label = {
+            show: true,
+            formatter: '{b}\n{d}%',
+            color: theme.textStyle.color,
+            fontFamily: theme.textStyle.fontFamily,
+            fontSize: Math.max(theme.minLabelSize + 2, 12),
+            fontWeight: 600
+          }
+        }
+        next.emphasis = emph
       }
     }
 
@@ -446,4 +479,73 @@ export const applyChartTheme = (options: ChartOption = {}) => {
   }
 
   return themed
+}
+
+// ── 渐变色工厂 ──
+
+/**
+ * 创建线性渐变色配置
+ * @param color 语义色 key（如 'revenue'）或 hex 值
+ * @param direction 渐变方向
+ * @param startOpacity 起始透明度（默认 0.3）
+ * @param endOpacity 结束透明度（默认 0）
+ */
+export function createGradient(
+  color: string,
+  direction: 'vertical' | 'horizontal' = 'vertical',
+  startOpacity = 0.3,
+  endOpacity = 0
+) {
+  const hex = (semanticColors as Record<string, string>)[color] || color
+  const isVertical = direction === 'vertical'
+  const toHexAlpha = (opacity: number) =>
+    Math.round(opacity * 255).toString(16).padStart(2, '0')
+  return {
+    type: 'linear' as const,
+    x: 0, y: 0,
+    x2: isVertical ? 0 : 1,
+    y2: isVertical ? 1 : 0,
+    colorStops: [
+      { offset: 0, color: hex + toHexAlpha(startOpacity) },
+      { offset: 1, color: hex + toHexAlpha(endOpacity) }
+    ]
+  }
+}
+
+// ── 图表预设模板 ──
+
+type ScaleHelper = { scaleNumber: (value: number, min?: number) => number }
+
+export function getBaseGridConfig(scale: ScaleHelper) {
+  return {
+    top: scale.scaleNumber(24, 20),
+    bottom: scale.scaleNumber(24, 20),
+    left: scale.scaleNumber(48, 40),
+    right: scale.scaleNumber(16, 12),
+    containLabel: false
+  }
+}
+
+export function getBaseTooltipConfig(colors: ReturnType<typeof getThemeColors>, scale: ScaleHelper) {
+  return {
+    trigger: 'axis' as const,
+    backgroundColor: colors.bgPanel,
+    borderColor: colors.border,
+    textStyle: { color: colors.textPrimary, fontSize: scale.scaleNumber(11, 10) },
+    axisPointer: { type: 'line' as const, lineStyle: { color: colors.border } }
+  }
+}
+
+export function getBaseAxisConfig(colors: ReturnType<typeof getThemeColors>, scale: ScaleHelper) {
+  return {
+    xAxis: {
+      axisLine: { lineStyle: { color: colors.axisLine } },
+      axisTick: { show: false },
+      axisLabel: { color: colors.textSecondary, fontSize: scale.scaleNumber(11, 10) }
+    },
+    yAxis: {
+      axisLabel: { color: colors.textSecondary, fontSize: scale.scaleNumber(11, 10) },
+      splitLine: { lineStyle: { color: colors.splitLine } }
+    }
+  }
 }

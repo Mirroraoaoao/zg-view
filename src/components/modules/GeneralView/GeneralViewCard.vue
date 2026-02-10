@@ -50,7 +50,7 @@ const alertCount = ref(3) // Mock data
 .module-card {
   width: 100%;
   height: 100%;
-  padding: 20px;
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -74,9 +74,9 @@ const alertCount = ref(3) // Mock data
 .alert-bubble {
   background: var(--accent-danger);
   color: white;
-  padding: 4px 12px;
+  padding: clamp(4px, 0.3vw, 8px) var(--space-3);
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -157,13 +157,13 @@ const alertCount = ref(3) // Mock data
   
   .metric-row {
     background: rgba(255,255,255,0.03);
-    padding: 10px;
+    padding: var(--space-2);
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     
-    .metric-label { font-size: 0.9rem; color: var(--text-secondary); }
+    .metric-label { font-size: var(--text-md); color: var(--text-secondary); }
     .metric-val { font-weight: bold; font-size: 1.1rem; }
     .text-up { color: var(--accent-green); }
   }

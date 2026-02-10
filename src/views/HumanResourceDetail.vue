@@ -1,9 +1,16 @@
 <template>
   <SubScreenLayout title="人力资源" subtitle="Human Resources" meta="数据更新时间 08:30">
-    <div class="hr-grid">
-      <section class="panel cadre-panel">
+    <div v-if="loading" class="hr-grid hr-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--cadre" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--summary" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--salary" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--talent" />
+    </div>
+
+    <div v-else class="hr-grid">
+      <section class="panel cadre-panel panel-animate-in" :style="stagger[0]">
         <div class="section-head">
-          <h3 class="panel-title">L1：干部管理</h3>
+          <PanelHeader title="L1：干部管理" />
           <span class="section-chip">组织结构</span>
         </div>
 
@@ -54,10 +61,10 @@
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>职级</th>
-                    <th>制造板块</th>
-                    <th>服务板块</th>
-                    <th>投资板块</th>
+                    <th scope="col">职级</th>
+                    <th scope="col">制造板块</th>
+                    <th scope="col">服务板块</th>
+                    <th scope="col">投资板块</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -83,9 +90,9 @@
         </svg>
       </section>
 
-      <section class="panel summary-panel">
+      <section class="panel summary-panel panel-animate-in" :style="stagger[1]">
         <div class="section-head">
-          <h3 class="panel-title">L1：人员情况</h3>
+          <PanelHeader title="L1：人员情况" />
           <span class="section-chip">规模总览</span>
         </div>
         <div class="summary-kpis">
@@ -96,9 +103,9 @@
         </div>
       </section>
 
-      <section class="panel salary-panel">
+      <section class="panel salary-panel panel-animate-in" :style="stagger[2]">
         <div class="section-head">
-          <h3 class="panel-title">L1：人力成本预算执行情况</h3>
+          <PanelHeader title="L1：人力成本预算执行情况" />
           <span class="section-chip">成本与人效</span>
         </div>
         <div class="salary-grid">
@@ -123,14 +130,14 @@
         </div>
       </section>
 
-      <section class="panel talent-panel">
+      <section class="panel talent-panel panel-animate-in" :style="stagger[3]">
         <div class="section-head">
-          <h3 class="panel-title">L1：产业人才结构</h3>
+          <PanelHeader title="L1：产业人才结构" />
           <span class="section-chip">结构分布</span>
         </div>
         <div class="talent-layout">
           <div class="chart">
-            <BaseChart :options="talentOption" />
+            <BaseChart :options="talentOption" ariaLabel="产业人才结构饼图" />
           </div>
           <div class="talent-legend">
             <div v-for="item in hrData.talentStructure" :key="item.name" class="legend-item">
@@ -146,14 +153,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { hrData } from '../data/mockDashboard'
-import { getThemeColors } from '../utils/chartTheme'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
 
-const colors = getThemeColors()
 const personnelSummary = computed(() => hrData.summary.slice(0, 3))
+const stagger = useStaggerAnimation(4)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const clampPercent = (value: string) => {
   const numeric = Number.parseFloat(value)
@@ -171,8 +187,7 @@ const talentOption = computed(() => ({
       type: 'pie',
       radius: ['44%', '68%'],
       center: ['44%', '50%'],
-      label: { color: colors.textPrimary, fontSize: 11, formatter: '{b} {d}%' },
-      labelLine: { lineStyle: { color: colors.labelLine } },
+      label: { formatter: '{b} {d}%' },
       data: hrData.talentStructure.map((item) => ({
         value: item.value,
         name: item.name,
@@ -197,6 +212,15 @@ const talentOption = computed(() => ({
     'cadre talent';
   gap: 14px;
 }
+
+.hr-grid--loading {
+  pointer-events: none;
+}
+
+.skeleton-slot--cadre { grid-area: cadre; }
+.skeleton-slot--summary { grid-area: summary; }
+.skeleton-slot--salary { grid-area: salary; }
+.skeleton-slot--talent { grid-area: talent; }
 
 .cadre-panel {
   grid-area: cadre;
@@ -233,13 +257,6 @@ const talentOption = computed(() => ({
     var(--bg-panel);
 }
 
-.panel-title {
-  font-size: 0.98rem;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -247,22 +264,19 @@ const talentOption = computed(() => ({
   gap: 10px;
 }
 
+.section-head :deep(.panel-header) {
+  margin-bottom: 0;
+}
+
 .section-chip {
-  padding: 4px 10px;
+  padding: clamp(4px, 0.3vw, 8px) var(--space-2);
   border-radius: 999px;
   border: 1px solid rgba(90, 204, 255, 0.32);
   background: rgba(90, 204, 255, 0.14);
   color: var(--accent-cyan);
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   letter-spacing: 0.08em;
   white-space: nowrap;
-}
-
-.section-title {
-  font-size: 0.64rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  letter-spacing: 0.08em;
 }
 
 .cadre-layout {
@@ -277,7 +291,7 @@ const talentOption = computed(() => ({
 .cadre-table-panel {
   min-height: 0;
   border-radius: 12px;
-  padding: 10px;
+  padding: var(--space-2);
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.14);
 }
@@ -336,7 +350,7 @@ const talentOption = computed(() => ({
 }
 
 .ring-label {
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -352,13 +366,13 @@ const talentOption = computed(() => ({
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   display: grid;
   align-content: center;
 }
 
 .overview-label {
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-bottom: 6px;
 }
@@ -385,7 +399,7 @@ const talentOption = computed(() => ({
 
 .summary-kpi {
   border-radius: 10px;
-  padding: 10px;
+  padding: var(--space-2);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
   display: grid;
@@ -401,7 +415,7 @@ const talentOption = computed(() => ({
 }
 
 .summary-label {
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -429,7 +443,7 @@ const talentOption = computed(() => ({
 .salary-section {
   min-height: 0;
   border-radius: 10px;
-  padding: 10px;
+  padding: var(--space-2);
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
   display: grid;
@@ -451,13 +465,13 @@ const talentOption = computed(() => ({
   border-radius: 8px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   strong {
     font-family: var(--font-display);
     color: var(--text-primary);
-    font-size: 0.88rem;
+    font-size: var(--text-md);
   }
 }
 
@@ -472,7 +486,7 @@ const talentOption = computed(() => ({
 .chart {
   min-height: 0;
   border-radius: 10px;
-  padding: 6px;
+  padding: var(--space-1);
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
 }
@@ -493,13 +507,13 @@ const talentOption = computed(() => ({
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
-  font-size: 0.66rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   strong {
     font-family: var(--font-display);
     color: var(--text-primary);
-    font-size: 0.86rem;
+    font-size: var(--text-md);
   }
 }
 

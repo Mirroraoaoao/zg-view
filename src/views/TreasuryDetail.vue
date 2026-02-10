@@ -1,8 +1,15 @@
 <template>
   <SubScreenLayout title="资金分析" subtitle="Treasury Analysis" meta="数据更新时间 08:30">
-    <div class="treasury-grid">
-      <section class="panel financing-overview">
-        <h3 class="panel-title">L1：融资管理 / L2：融资进度</h3>
+    <div v-if="loading" class="treasury-grid treasury-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--overview" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--channel" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--cost" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--term" />
+    </div>
+
+    <div v-else class="treasury-grid">
+      <section class="panel financing-overview panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：融资管理 / L2：融资进度" />
         <div class="overview-kpis">
           <div class="kpi-card primary">
             <div class="kpi-label">年度融资计划总额</div>
@@ -18,18 +25,18 @@
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="financingChannelOption" />
+          <BaseChart :options="financingChannelOption" ariaLabel="融资渠道额度占比条形图" />
         </div>
       </section>
 
-      <section class="panel channel-detail">
-        <h3 class="panel-title">L3：融资渠道额度占比</h3>
+      <section class="panel channel-detail panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L3：融资渠道额度占比" />
         <div class="table-wrap">
         <table class="data-table">
           <thead>
             <tr>
-              <th>指标项</th>
-              <th>指标值</th>
+              <th scope="col">指标项</th>
+              <th scope="col">指标值</th>
             </tr>
           </thead>
           <tbody>
@@ -50,8 +57,8 @@
         </div>
       </section>
 
-      <section class="panel cost-structure">
-        <h3 class="panel-title">L2：融资成本与结构管理</h3>
+      <section class="panel cost-structure panel-animate-in" :style="stagger[2]">
+        <PanelHeader title="L2：融资成本与结构管理" />
         <div class="cost-summary">
           <div class="cost-item highlight">
             <span>集团综合融资成本率</span>
@@ -67,14 +74,14 @@
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="costTrendOption" />
+          <BaseChart :options="costTrendOption" ariaLabel="融资成本趋势折线图" />
         </div>
       </section>
 
-      <section class="panel term-structure">
-        <h3 class="panel-title">L3：负债期限结构</h3>
+      <section class="panel term-structure panel-animate-in" :style="stagger[3]">
+        <PanelHeader title="L3：负债期限结构" />
         <div class="chart">
-          <BaseChart :options="termStructureOption" />
+          <BaseChart :options="termStructureOption" ariaLabel="负债期限结构饼图" />
         </div>
         <div class="structure-tags">
           <span class="chip">长期负债 {{ treasuryData.cost.termStructure.longTerm }}</span>
@@ -87,10 +94,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { treasuryData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+
+const stagger = useStaggerAnimation(4)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const financingChannelOption = computed(() => ({
   grid: { top: 20, bottom: 20, left: 80, right: 30 },
@@ -171,6 +190,15 @@ const termStructureOption = computed(() => ({
   gap: 14px;
 }
 
+.treasury-grid--loading {
+  pointer-events: none;
+}
+
+.skeleton-slot--overview { grid-area: overview; }
+.skeleton-slot--channel { grid-area: channel; }
+.skeleton-slot--cost { grid-area: cost; }
+.skeleton-slot--term { grid-area: term; }
+
 .financing-overview,
 .channel-detail,
 .cost-structure,
@@ -203,11 +231,6 @@ const termStructureOption = computed(() => ({
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
-.panel-title {
-  color: var(--text-primary);
-  letter-spacing: 0.1em;
-}
-
 .overview-kpis {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -217,7 +240,7 @@ const termStructureOption = computed(() => ({
 }
 
 .kpi-card {
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -230,7 +253,7 @@ const termStructureOption = computed(() => ({
 }
 
 .kpi-label {
-  font-size: var(--screen-text-xs);
+  font-size: var(--text-xs);
   color: var(--text-muted);
   letter-spacing: 0.1em;
   margin-bottom: 6px;
@@ -253,7 +276,7 @@ const termStructureOption = computed(() => ({
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  padding: 6px;
+  padding: var(--space-1);
   overflow: auto;
   min-height: 0;
 }
@@ -271,11 +294,11 @@ const termStructureOption = computed(() => ({
 .cost-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  font-size: var(--screen-text-xs);
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 

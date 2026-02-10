@@ -1,8 +1,18 @@
 <template>
   <SubScreenLayout title="业务数据" subtitle="Business Metrics" meta="数据更新时间 08:30">
-    <div class="operation-grid">
-      <section class="panel investment-panel">
-        <h3 class="panel-title">L1：产业招商</h3>
+    <div v-if="loading" class="operation-grid operation-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--investment" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--industry" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--risk" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--construction" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--hr" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--fund" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--summary" />
+    </div>
+
+    <div v-else class="operation-grid">
+      <section class="panel investment-panel panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：产业招商" />
         <div class="investment-kpis">
           <div class="investment-kpi">
             <div class="kpi-header">
@@ -29,8 +39,8 @@
         </div>
       </section>
 
-      <section class="panel industry-panel">
-        <h3 class="panel-title">L2：工业产值与新增签约面积（按载体）</h3>
+      <section class="panel industry-panel panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L2：工业产值与新增签约面积（按载体）" />
         <div class="industry-main">
           <div class="industry-kpi primary">
             <div class="industry-label">工业产值</div>
@@ -56,8 +66,8 @@
         </div>
       </section>
 
-      <section class="panel risk-panel">
-        <h3 class="panel-title">L1：风险应对</h3>
+      <section class="panel risk-panel panel-animate-in" :style="stagger[2]">
+        <PanelHeader title="L1：风险应对" />
         <div class="risk-list">
           <div class="risk-item warning">
             <div class="risk-icon">
@@ -107,8 +117,8 @@
         </div>
       </section>
 
-      <section class="panel construction-panel">
-        <h3 class="panel-title">L1：投资情况</h3>
+      <section class="panel construction-panel panel-animate-in" :style="stagger[3]">
+        <PanelHeader title="L1：投资情况" />
         <div class="construction-main">
           <div class="construction-kpi">
             <div class="construction-label">固定资产投资完成情况</div>
@@ -123,8 +133,8 @@
         </div>
       </section>
 
-      <section class="panel hr-panel">
-        <h3 class="panel-title">L1：人力</h3>
+      <section class="panel hr-panel panel-animate-in" :style="stagger[4]">
+        <PanelHeader title="L1：人力" />
         <div class="hr-kpis">
           <div class="hr-kpi">
             <div class="hr-label">人均产出</div>
@@ -137,8 +147,8 @@
         </div>
       </section>
 
-      <section class="panel fund-panel">
-        <h3 class="panel-title">L1：资金情况</h3>
+      <section class="panel fund-panel panel-animate-in" :style="stagger[5]">
+        <PanelHeader title="L1：资金情况" />
         <div class="fund-list">
           <div class="fund-item">
             <span>资金整体情况</span>
@@ -159,24 +169,26 @@
         </div>
       </section>
 
-      <section class="panel summary-panel">
-        <h3 class="panel-title">L1：资产运营情况</h3>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>项目名称</th>
-              <th>已售面积</th>
-              <th>去化率</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in operationData.assetOperations.projectSales" :key="item.name">
-              <td>{{ item.name }}</td>
-              <td>{{ item.sold }}</td>
-              <td>{{ item.rate }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <section class="panel summary-panel panel-animate-in" :style="stagger[6]">
+        <PanelHeader title="L1：资产运营情况" />
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">项目名称</th>
+                <th scope="col">已售面积</th>
+                <th scope="col">去化率</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in operationData.assetOperations.projectSales" :key="item.name">
+                <td>{{ item.name }}</td>
+                <td>{{ item.sold }}</td>
+                <td>{{ item.rate }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div class="asset-total">
           <span>本年度已盘活资产规模</span>
           <strong>{{ operationData.assetOperations.revitalizedAssets }}</strong>
@@ -188,7 +200,20 @@
 
 <script setup lang="ts">
 import SubScreenLayout from '../components/SubScreenLayout.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { operationData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+import { onMounted, onUnmounted, ref } from 'vue'
+
+const stagger = useStaggerAnimation(7)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 </script>
 
 <style scoped lang="scss">
@@ -205,6 +230,18 @@ import { operationData } from '../data/mockDashboard'
     'summary summary hr';
   gap: 14px;
 }
+
+.operation-grid--loading {
+  pointer-events: none;
+}
+
+.skeleton-slot--investment { grid-area: investment; }
+.skeleton-slot--industry { grid-area: industry; }
+.skeleton-slot--risk { grid-area: risk; }
+.skeleton-slot--construction { grid-area: construction; }
+.skeleton-slot--hr { grid-area: hr; }
+.skeleton-slot--fund { grid-area: fund; }
+.skeleton-slot--summary { grid-area: summary; }
 
 .investment-panel {
   grid-area: investment;
@@ -254,13 +291,6 @@ import { operationData } from '../data/mockDashboard'
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
-.panel-title {
-  font-size: 0.76rem;
-  letter-spacing: 0.08em;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
 .investment-kpis {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -271,7 +301,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .investment-kpi {
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -294,14 +324,14 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .kpi-label {
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   line-height: 1.35;
 }
 
 .kpi-badge {
-  font-size: 0.55rem;
-  padding: 2px 8px;
+  font-size: var(--text-xxs);
+  padding: clamp(2px, 0.22vw, 6px) var(--space-1);
   border-radius: 10px;
   background: rgba(54, 241, 205, 0.15);
   color: var(--accent-cyan);
@@ -313,7 +343,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .kpi-value {
-  font-size: 0.86rem;
+  font-size: var(--text-md);
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
@@ -329,7 +359,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .industry-kpi.primary {
-  padding: 16px;
+  padding: var(--space-3);
   border-radius: 14px;
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.2);
@@ -338,7 +368,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .industry-label {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -355,7 +385,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .signed-title {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 10px;
 }
@@ -369,11 +399,11 @@ import { operationData } from '../data/mockDashboard'
 .signed-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.08);
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   strong {
@@ -395,7 +425,7 @@ import { operationData } from '../data/mockDashboard'
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -444,7 +474,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .risk-label {
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 4px;
 }
@@ -463,7 +493,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .construction-kpi {
-  padding: 18px;
+  padding: var(--space-4);
   border-radius: 14px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -473,7 +503,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .construction-label {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 10px;
 }
@@ -490,7 +520,7 @@ import { operationData } from '../data/mockDashboard'
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 
@@ -507,7 +537,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .hr-kpi {
-  padding: 16px;
+  padding: var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -517,7 +547,7 @@ import { operationData } from '../data/mockDashboard'
 }
 
 .hr-label {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -539,11 +569,11 @@ import { operationData } from '../data/mockDashboard'
 .fund-item {
   display: flex;
   justify-content: space-between;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 
@@ -561,8 +591,14 @@ import { operationData } from '../data/mockDashboard'
   background: linear-gradient(135deg, rgba(90, 204, 255, 0.14), rgba(90, 204, 255, 0.06));
 }
 
-.summary-panel .data-table {
+.summary-panel .table-wrap {
   margin-top: 10px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.summary-panel .table-wrap .data-table {
+  margin-top: 0;
 }
 
 .asset-total {
@@ -570,11 +606,11 @@ import { operationData } from '../data/mockDashboard'
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(54, 241, 205, 0.14), rgba(54, 241, 205, 0.06));
   border: 1px solid rgba(54, 241, 205, 0.2);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 

@@ -1,7 +1,5 @@
-﻿<template>
+<template>
   <div class="portal">
-    <ParticlesBackground :particleCount="80" :connectionDistance="150" baseColor="70, 170, 230" />
-
     <div class="portal-top-decor" :style="{ backgroundImage: `url(${topDecorSecondary})` }" aria-hidden="true">
       <div class="portal-top-decor-center" :style="{ backgroundImage: `url(${topDecorPrimary})` }"></div>
     </div>
@@ -69,9 +67,9 @@
           </div>
 
           <div class="hero-metrics">
-            <div v-for="metric in hero.metrics" :key="metric.label" class="hero-metric">
+            <div v-for="metric in heroMetrics" :key="metric.label" class="hero-metric">
               <div class="label">{{ metric.label }}</div>
-              <div class="value">{{ metric.value }}</div>
+              <div class="value">{{ metric.display }}</div>
             </div>
           </div>
 
@@ -79,7 +77,7 @@
             <div class="hero-chart">
               <div class="hero-chart-title">营收趋势</div>
               <div class="hero-chart-body">
-                <BaseChart :options="heroTrendOption" />
+                <BaseChart :options="heroTrendOption" ariaLabel="营收趋势折线图" />
               </div>
             </div>
           </div>
@@ -125,7 +123,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import ParticlesBackground from '../components/ParticlesBackground.vue'
 import BaseChart from '../components/BaseChart.vue'
 import topDecorPrimary from '../assets/images/portal/portal-top-decor-center.webp'
 import topDecorSecondary from '../assets/images/portal/portal-top-decor-bg.png'
@@ -133,7 +130,9 @@ import bottomDecor from '../assets/images/portal/portal-bottom-decor.png'
 import brandLogoAlt from '../assets/images/portal/brand-logo-alt.png'
 import { portalData } from '../data/mockDashboard'
 import { useResponsiveScale } from '../composables/useResponsiveScale'
-import { getChartColors } from '../utils/chartTheme'
+import { useCountUp } from '../composables/useCountUp'
+import { createGradient, getBaseAxisConfig, getBaseGridConfig, getBaseTooltipConfig, getChartColors } from '../utils/chartTheme'
+import { formatMetricText, parseMetricText } from '../utils/metricFormat'
 
 const router = useRouter()
 const now = ref(new Date())
@@ -143,6 +142,16 @@ let timer = 0
 const { header, hero, heroCharts, leftModules, rightModules } = portalData
 const headerTitle = header?.title?.trim() || '集团数据驾驶舱'
 const headerSubtitle = header?.subtitle?.trim() || '企业经营全景态势一屏统览'
+
+const heroMetrics = hero.metrics.map((item) => {
+  const parsed = parseMetricText(item.value)
+  if (!parsed) {
+    return { ...item, display: item.value }
+  }
+  const displayValue = useCountUp(() => parsed.value, 1200, parsed.decimals)
+  const display = computed(() => formatMetricText(parsed, displayValue.value))
+  return { ...item, display }
+})
 
 const pad = (value: number) => value.toString().padStart(2, '0')
 
@@ -156,28 +165,26 @@ const dateTimeText = computed(() => {
 
 const heroTrendOption = computed(() => {
   const colors = getChartColors()
+  const scale = { scaleNumber }
+  const baseAxis = getBaseAxisConfig(colors, scale)
   return {
     grid: {
+      ...getBaseGridConfig(scale),
       top: scaleNumber(14, 14),
       bottom: scaleNumber(10, 10),
       left: scaleNumber(32, 30),
       right: scaleNumber(12, 12)
     },
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: colors.bgPanel,
-      borderColor: colors.border,
-      textStyle: { color: colors.textPrimary, fontSize: scaleNumber(10, 10) },
-      axisPointer: { type: 'line', lineStyle: { color: colors.border } }
-    },
+    tooltip: getBaseTooltipConfig(colors, scale),
+    ...baseAxis,
     xAxis: {
+      ...baseAxis.xAxis,
       type: 'category',
       data: heroCharts.trend.labels,
-      axisLine: { lineStyle: { color: colors.axisLine } },
-      axisTick: { show: false },
-      axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(10, 10) }
+      axisLabel: { ...baseAxis.xAxis.axisLabel, fontSize: scaleNumber(10, 10) }
     },
     yAxis: {
+      ...baseAxis.yAxis,
       type: 'value',
       axisLabel: { show: false },
       splitLine: { lineStyle: { color: colors.splitLine } }
@@ -196,17 +203,7 @@ const heroTrendOption = computed(() => {
           shadowColor: colors.revenue
         },
         areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: colors.revenue + '30' },
-              { offset: 1, color: 'rgba(12, 24, 40, 0)' }
-            ]
-          }
+          color: createGradient('revenue', 'vertical', 0.19, 0)
         },
         markPoint: { data: [{ type: 'max', name: '峰值' }] }
       }
@@ -248,23 +245,10 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
 
-  --space-1: clamp(6px, 0.5vw, 12px);
-  --space-2: clamp(10px, 0.7vw, 18px);
-  --space-3: clamp(14px, 0.9vw, 24px);
-  --space-4: clamp(18px, 1.1vw, 32px);
-  --space-5: clamp(22px, 1.3vw, 40px);
+  // Portal 独有变量
   --card-gap: clamp(10px, 0.7vw, 18px);
   --card-padding: clamp(8px, 0.55vw, 14px);
-  --text-xxs: clamp(9px, 0.48vw, 13px);
   --metric-value: clamp(12px, 0.75vw, 16px);
-
-  --text-xs: clamp(11px, 0.55vw, 18px);
-  --text-sm: clamp(12px, 0.65vw, 20px);
-  --text-md: clamp(14px, 0.75vw, 22px);
-  --text-lg: clamp(16px, 0.95vw, 26px);
-  --text-xl: clamp(20px, 1.1vw, 30px);
-  --text-2xl: clamp(24px, 1.4vw, 40px);
-  --text-3xl: clamp(28px, 1.8vw, 52px);
 }
 
 .portal-top-decor {
@@ -285,7 +269,7 @@ onUnmounted(() => {
 }
 
 .portal-top-decor-center {
-  width: 1180px;
+  width: clamp(680px, 62vw, 1180px);
   max-width: 92vw;
   height: clamp(70px, 10vh, 140px);
   background-repeat: no-repeat;
@@ -631,7 +615,10 @@ onUnmounted(() => {
   flex-direction: column;
   gap: var(--space-1);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    var(--transition-transform),
+    var(--transition-shadow),
+    var(--transition-border);
   position: relative;
   overflow: hidden;
   min-height: 0;
@@ -654,11 +641,11 @@ onUnmounted(() => {
   inset: 0;
   background: var(--card-hover-glow);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: var(--transition-opacity);
 }
 
 .module-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--nav-hover-border);
   box-shadow: var(--nav-hover-shadow);
 }

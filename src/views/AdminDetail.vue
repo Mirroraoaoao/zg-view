@@ -1,19 +1,25 @@
 <template>
   <SubScreenLayout title="行政管理" subtitle="Administrative Management" meta="数据更新时间 08:30">
-    <div class="admin-grid">
-      <section class="panel schedule-panel">
+    <div v-if="loading" class="admin-grid admin-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--schedule" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--supervision" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--meeting" />
+    </div>
+
+    <div v-else class="admin-grid">
+      <section class="panel schedule-panel panel-animate-in" :style="stagger[0]">
         <div class="section-head">
-          <h3 class="panel-title">L1：领导行程</h3>
+          <PanelHeader title="L1：领导行程" />
           <span class="section-chip">当日安排 {{ scheduleCount }} 项</span>
         </div>
         <div class="schedule-table-wrap">
           <table class="data-table">
             <thead>
               <tr>
-                <th>时间</th>
-                <th>领导</th>
-                <th>事项</th>
-                <th>地点</th>
+                <th scope="col">时间</th>
+                <th scope="col">领导</th>
+                <th scope="col">事项</th>
+                <th scope="col">地点</th>
               </tr>
             </thead>
             <tbody>
@@ -28,9 +34,9 @@
         </div>
       </section>
 
-      <section class="panel supervision-panel">
+      <section class="panel supervision-panel panel-animate-in" :style="stagger[1]">
         <div class="section-head">
-          <h3 class="panel-title">L1：督办事项完成率</h3>
+          <PanelHeader title="L1：督办事项完成率" />
           <span class="section-chip">执行监控</span>
         </div>
         <div class="supervision-main">
@@ -85,9 +91,9 @@
         </svg>
       </section>
 
-      <section class="panel meeting-panel">
+      <section class="panel meeting-panel panel-animate-in" :style="stagger[2]">
         <div class="section-head">
-          <h3 class="panel-title">L1：三会议召开次数</h3>
+          <PanelHeader title="L1：三会议召开次数" />
           <span class="section-chip">年度累计</span>
         </div>
 
@@ -115,9 +121,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { adminData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+
+const stagger = useStaggerAnimation(3)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const clampPercent = (value: string) => {
   const numeric = Number.parseFloat(value)
@@ -153,6 +171,14 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   gap: 14px;
 }
 
+.admin-grid--loading {
+  pointer-events: none;
+}
+
+.skeleton-slot--schedule { grid-area: schedule; }
+.skeleton-slot--supervision { grid-area: supervision; }
+.skeleton-slot--meeting { grid-area: meeting; }
+
 .schedule-panel {
   grid-area: schedule;
 }
@@ -177,13 +203,6 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
     var(--bg-panel);
 }
 
-.panel-title {
-  font-size: 0.98rem;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -191,13 +210,17 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   gap: 10px;
 }
 
+.section-head :deep(.panel-header) {
+  margin-bottom: 0;
+}
+
 .section-chip {
-  padding: 4px 10px;
+  padding: clamp(4px, 0.3vw, 8px) var(--space-2);
   border-radius: 999px;
   border: 1px solid rgba(90, 204, 255, 0.32);
   background: rgba(90, 204, 255, 0.14);
   color: var(--accent-cyan);
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   letter-spacing: 0.08em;
   white-space: nowrap;
 }
@@ -210,7 +233,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   border-radius: 12px;
   border: 1px solid rgba(90, 204, 255, 0.14);
   background: var(--subscreen-card-bg);
-  padding: 4px;
+  padding: clamp(4px, 0.3vw, 8px);
 }
 
 .supervision-main {
@@ -268,7 +291,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
 }
 
 .ring-label {
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -285,13 +308,13 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   display: grid;
   align-content: center;
 }
 
 .info-label {
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-bottom: 6px;
 }
@@ -307,7 +330,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 0.66rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   strong {
@@ -341,7 +364,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
 
 .meeting-total {
   border-radius: 12px;
-  padding: 12px;
+  padding: var(--space-2);
   background: linear-gradient(135deg, rgba(90, 204, 255, 0.2), rgba(90, 204, 255, 0.08));
   border: 1px solid rgba(90, 204, 255, 0.26);
   display: grid;
@@ -351,7 +374,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
 }
 
 .meeting-label {
-  font-size: 0.66rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -372,7 +395,7 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
 
 .meeting-item {
   border-radius: 9px;
-  padding: 8px 10px;
+  padding: var(--space-1) var(--space-2);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
   display: grid;
@@ -384,13 +407,13 @@ const meetingWidth = (value: number) => `${Math.max((value / meetingMax.value) *
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
-  font-size: 0.66rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   strong {
     font-family: var(--font-display);
     color: var(--text-primary);
-    font-size: 0.9rem;
+    font-size: var(--text-md);
   }
 }
 

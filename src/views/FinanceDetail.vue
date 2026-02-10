@@ -1,21 +1,27 @@
-﻿<template>
+<template>
   <SubScreenLayout title="财务管理" subtitle="Financial Management" meta="数据更新时间 08:30">
-    <div class="finance-grid">
-      <section class="panel overview">
-        <h3 class="panel-title">L1：核心财务总览</h3>
+    <div v-if="loading" class="finance-grid finance-grid--loading">
+      <SkeletonPanel class="skeleton-slot skeleton-slot--overview" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--trend" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--budget" />
+    </div>
+
+    <div v-else class="finance-grid">
+      <section class="panel overview panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：核心财务总览" />
         <div class="kpi-grid">
-          <div v-for="item in financeData.core.metrics" :key="item.label" class="kpi">
+          <div v-for="item in coreMetrics" :key="item.label" class="kpi">
             <div class="kpi-label">{{ item.label }}</div>
-            <div class="kpi-value">{{ item.value }}</div>
+            <div class="kpi-value">{{ item.displayText }}</div>
           </div>
         </div>
       </section>
 
-      <section class="panel trend">
-        <h3 class="panel-title">L2：一利五率</h3>
+      <section class="panel trend panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L2：一利五率" />
         <div class="trend-layout">
           <div class="chart">
-            <BaseChart :options="benchmarkOption" />
+            <BaseChart :options="benchmarkOption" group="finance-link" ariaLabel="一利五率对标条形图" />
           </div>
           <div class="trend-list">
             <div v-for="item in benchmarkRows" :key="item.label" class="trend-row">
@@ -26,8 +32,8 @@
         </div>
       </section>
 
-      <section class="panel budget">
-        <h3 class="panel-title">L2：社会效益类</h3>
+      <section class="panel budget panel-animate-in" :style="stagger[2]">
+        <PanelHeader title="L2：社会效益类" />
         <div class="budget-layout">
           <div class="budget-progress">
             <div v-for="item in financeData.budget.execution" :key="item.label" class="progress-item">
@@ -39,28 +45,48 @@
             </div>
           </div>
           <div class="chart">
-            <BaseChart :options="budgetOption" />
+            <BaseChart :options="budgetOption" group="finance-link" ariaLabel="社会效益年度工业产值柱状图" />
           </div>
         </div>
         <div class="budget-tags">
           <span v-for="tag in financeData.budget.tags" :key="tag" class="chip">{{ tag }}</span>
         </div>
       </section>
-
     </div>
   </SubScreenLayout>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
 import BaseChart from '../components/BaseChart.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { financeData } from '../data/mockDashboard'
 import { useResponsiveScale } from '../composables/useResponsiveScale'
+import { useCountUp } from '../composables/useCountUp'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
 import { getThemeColors } from '../utils/chartTheme'
+import { formatMetricText, parseMetricText } from '../utils/metricFormat'
 
 const { scaleNumber } = useResponsiveScale()
 const colors = getThemeColors()
+const stagger = useStaggerAnimation(3)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
+
+const coreMetrics = financeData.core.metrics.map((item) => {
+  const parsed = parseMetricText(item.value)
+  if (!parsed) return { ...item, displayText: item.value }
+  const displayValue = useCountUp(() => parsed.value, 1200, parsed.decimals)
+  const displayText = computed(() => formatMetricText(parsed, displayValue.value))
+  return { ...item, displayText }
+})
 
 const benchmarkRows = computed(() =>
   financeData.benchmark.labels.map((label, index) => ({
@@ -133,16 +159,6 @@ const budgetOption = computed(() => ({
 
 <style scoped lang="scss">
 .finance-grid {
-  --space-1: clamp(6px, 0.5vw, 12px);
-  --space-2: clamp(10px, 0.7vw, 18px);
-  --space-3: clamp(14px, 0.95vw, 24px);
-  --text-xs: clamp(11px, 0.55vw, 16px);
-  --text-sm: clamp(12px, 0.7vw, 18px);
-  --text-md: clamp(14px, 0.8vw, 22px);
-  --text-lg: clamp(18px, 1vw, 26px);
-  --text-xl: clamp(22px, 1.2vw, 32px);
-  --panel-padding: clamp(12px, 0.8vw, 20px);
-  --panel-title-gap: clamp(8px, 0.6vw, 14px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -156,6 +172,14 @@ const budgetOption = computed(() => ({
   overflow: hidden;
   position: relative;
 }
+
+.finance-grid--loading {
+  pointer-events: none;
+}
+
+.skeleton-slot--overview { grid-area: overview; }
+.skeleton-slot--trend { grid-area: trend; }
+.skeleton-slot--budget { grid-area: budget; }
 
 .overview {
   grid-area: overview;
@@ -179,16 +203,14 @@ const budgetOption = computed(() => ({
     var(--bg-panel);
 }
 
+.budget.panel {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
 .panel > .chart {
   width: 100%;
   height: 100%;
   min-height: 0;
-}
-
-.panel-title {
-  font-size: var(--text-sm);
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
 }
 
 .overview .kpi {

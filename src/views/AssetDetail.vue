@@ -1,9 +1,14 @@
 <template>
   <SubScreenLayout title="资产管理" subtitle="Asset Management" meta="数据更新时间 08:30">
-    <div class="asset-grid">
-      <section class="panel operation-panel">
+    <div v-if="loading" class="asset-grid asset-grid--loading">
+      <SkeletonPanel class="skeleton-slot" />
+      <SkeletonPanel class="skeleton-slot" />
+    </div>
+
+    <div v-else class="asset-grid">
+      <section class="panel operation-panel panel-animate-in" :style="stagger[0]">
         <div class="section-head">
-          <h3 class="panel-title">L1：物业资产盘活 · L2：资产运营</h3>
+          <PanelHeader title="L1：物业资产盘活 · L2：资产运营" />
           <span class="section-chip">实时盘活视图</span>
         </div>
 
@@ -82,9 +87,9 @@
         </svg>
       </section>
 
-      <section class="panel sales-panel">
+      <section class="panel sales-panel panel-animate-in" :style="stagger[1]">
         <div class="section-head">
-          <h3 class="panel-title">L2：资产去化</h3>
+          <PanelHeader title="L2：资产去化" />
           <span class="section-chip warm">销售口径</span>
         </div>
         <div class="section-title">L3：销售与可售库存</div>
@@ -124,9 +129,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { assetData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+
+const stagger = useStaggerAnimation(2)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const clampPercent = (value: string) => {
   const numeric = Number.parseFloat(value)
@@ -149,6 +166,10 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   gap: 14px;
+}
+
+.asset-grid--loading {
+  pointer-events: none;
 }
 
 .operation-panel {
@@ -193,13 +214,17 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   gap: 10px;
 }
 
+.section-head :deep(.panel-header) {
+  margin-bottom: 0;
+}
+
 .section-chip {
-  padding: 4px 10px;
+  padding: clamp(4px, 0.3vw, 8px) var(--space-2);
   border-radius: 999px;
   border: 1px solid rgba(90, 204, 255, 0.32);
   background: rgba(90, 204, 255, 0.14);
   color: var(--accent-cyan);
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   letter-spacing: 0.08em;
   white-space: nowrap;
 }
@@ -218,13 +243,6 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   min-height: 0;
 }
 
-.panel-title {
-  font-size: 0.98rem;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
 .ring-card {
   position: relative;
   border-radius: 14px;
@@ -232,7 +250,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   background: var(--subscreen-ring-bg);
   display: grid;
   grid-template-rows: 1fr auto;
-  padding: 12px 10px;
+  padding: var(--space-2) var(--space-2);
   min-height: 0;
   overflow: hidden;
 }
@@ -275,7 +293,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .ring-label {
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-top: 4px;
   text-align: center;
@@ -288,7 +306,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.66rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
 }
 
@@ -308,17 +326,10 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  padding: 10px;
+  padding: var(--space-2);
   border-radius: 12px;
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.14);
-}
-
-.section-title {
-  font-size: 0.64rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  letter-spacing: 0.08em;
 }
 
 .rental-detail {
@@ -331,7 +342,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 
 .rental-item {
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: var(--space-1) var(--space-2);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.09);
   display: grid;
@@ -346,13 +357,13 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 
 .rental-label {
   color: var(--text-secondary);
-  font-size: 0.67rem;
+  font-size: var(--text-xs);
 }
 
 .rental-value {
   font-family: var(--font-display);
   color: var(--text-primary);
-  font-size: 0.86rem;
+  font-size: var(--text-md);
 }
 
 .mini-track {
@@ -379,7 +390,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .area-kpi {
-  padding: 10px 8px;
+  padding: var(--space-2) var(--space-1);
   border-radius: 10px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.09);
@@ -395,7 +406,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .area-label {
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-bottom: 6px;
 }
@@ -417,7 +428,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .sales-kpi {
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -432,7 +443,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .sales-label {
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   margin-bottom: 8px;
 }
@@ -452,7 +463,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 
 .completion-progress {
   margin-top: 12px;
-  padding: 12px;
+  padding: var(--space-2);
   border-radius: 12px;
   background: var(--subscreen-card-bg);
   border: 1px solid rgba(90, 204, 255, 0.14);
@@ -463,7 +474,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 
@@ -491,7 +502,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   margin-top: 6px;
   display: flex;
   justify-content: space-between;
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
 }
 

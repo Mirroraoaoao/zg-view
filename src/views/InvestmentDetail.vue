@@ -1,8 +1,13 @@
-﻿<template>
+<template>
   <SubScreenLayout title="投资运营" subtitle="Investment Operations" meta="数据更新时间 08:30">
-    <div class="investment-grid">
-      <section class="panel core-metrics">
-        <h3 class="panel-title">L1：核心投资指标 / L2：投资核心指标看板</h3>
+    <div v-if="loading" class="investment-grid investment-grid--loading">
+      <SkeletonPanel class="skeleton-slot" />
+      <SkeletonPanel class="skeleton-slot" />
+    </div>
+
+    <div v-else class="investment-grid">
+      <section class="panel core-metrics panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：核心投资指标 / L2：投资核心指标看板" />
         <div class="core-layout">
           <article class="hero-metric primary">
             <div class="hero-icon">
@@ -49,8 +54,8 @@
         </div>
       </section>
 
-      <section class="panel market-value">
-        <h3 class="panel-title">L1：投后运营与效益 / L2：投资公司管理</h3>
+      <section class="panel market-value panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L1：投后运营与效益 / L2：投资公司管理" />
         <div class="market-layout">
           <article class="market-value-main">
             <div class="market-label">控股上市公司市值</div>
@@ -77,9 +82,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { investmentData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+
+const stagger = useStaggerAnimation(2)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const marketTrendPoints = computed(() => {
   const labels = investmentData.marketValueTrend.labels
@@ -118,6 +135,10 @@ const marketTrendRange = computed(() => {
   gap: 14px;
 }
 
+.investment-grid--loading {
+  pointer-events: none;
+}
+
 .core-metrics,
 .market-value {
   min-height: 0;
@@ -137,13 +158,6 @@ const marketTrendRange = computed(() => {
     radial-gradient(105% 76% at 100% 100%, rgba(90, 204, 255, 0.1), transparent 62%),
     radial-gradient(90% 68% at 0% 0%, rgba(54, 241, 205, 0.06), transparent 58%),
     var(--bg-panel);
-}
-
-.panel-title {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-  margin-bottom: 8px;
 }
 
 .core-layout {
@@ -166,7 +180,7 @@ const marketTrendRange = computed(() => {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 18px 18px;
+  padding: var(--space-4);
   border-radius: 14px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.14);
@@ -212,7 +226,7 @@ const marketTrendRange = computed(() => {
 }
 
 .hero-label {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   letter-spacing: 0.06em;
   margin-bottom: 6px;
@@ -228,7 +242,7 @@ const marketTrendRange = computed(() => {
 
 .hero-foot {
   margin-top: 8px;
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
   letter-spacing: 0.08em;
 }
@@ -237,23 +251,23 @@ const marketTrendRange = computed(() => {
   position: absolute;
   top: 10px;
   right: 12px;
-  padding: 3px 10px;
+  padding: clamp(3px, 0.25vw, 6px) var(--space-2);
   border-radius: 12px;
   background: rgba(54, 241, 205, 0.12);
-  font-size: 0.58rem;
+  font-size: var(--text-xxs);
   color: var(--accent-cyan);
   letter-spacing: 0.08em;
 }
 
 .core-summary {
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
 }
 
 .summary-head {
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   color: var(--text-muted);
   margin-bottom: 8px;
@@ -263,9 +277,9 @@ const marketTrendRange = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: var(--space-1) 0;
   border-top: 1px solid rgba(90, 204, 255, 0.12);
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 
   &:first-of-type {
@@ -276,7 +290,7 @@ const marketTrendRange = computed(() => {
   strong {
     font-family: var(--font-display);
     color: var(--text-primary);
-    font-size: 0.82rem;
+    font-size: var(--text-sm);
   }
 }
 
@@ -294,12 +308,12 @@ const marketTrendRange = computed(() => {
   background: var(--subscreen-ring-bg);
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: var(--space-3);
   box-shadow: inset 0 0 24px rgba(90, 204, 255, 0.08);
 }
 
 .market-label {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   letter-spacing: 0.1em;
 }
@@ -315,14 +329,14 @@ const marketTrendRange = computed(() => {
 
 .market-foot {
   margin-top: 8px;
-  font-size: 0.62rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
   letter-spacing: 0.08em;
 }
 
 .trend-panel {
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
   min-height: 0;
@@ -331,7 +345,7 @@ const marketTrendRange = computed(() => {
 }
 
 .trend-head {
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   letter-spacing: 0.08em;
   color: var(--text-muted);
   margin-bottom: 8px;
@@ -361,7 +375,7 @@ const marketTrendRange = computed(() => {
   border: 1px solid rgba(90, 204, 255, 0.12);
   display: flex;
   align-items: end;
-  padding: 2px;
+  padding: clamp(2px, 0.22vw, 6px);
 }
 
 .trend-fill {
@@ -372,12 +386,12 @@ const marketTrendRange = computed(() => {
 }
 
 .trend-year {
-  font-size: 0.56rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
 }
 
 .trend-value {
-  font-size: 0.56rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
   font-family: var(--font-display);
 }

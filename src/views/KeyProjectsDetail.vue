@@ -1,8 +1,13 @@
-﻿<template>
+<template>
   <SubScreenLayout title="重点项目" subtitle="Key Projects" meta="数据更新时间 08:30">
-    <div class="projects-grid">
-      <section class="panel system-status">
-        <h3 class="panel-title">L1：集团年度重点项目清单 / L2：重点项目数量（待明细）</h3>
+    <div v-if="loading" class="projects-grid projects-grid--loading">
+      <SkeletonPanel class="skeleton-slot" />
+      <SkeletonPanel class="skeleton-slot" />
+    </div>
+
+    <div v-else class="projects-grid">
+      <section class="panel system-status panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：集团年度重点项目清单 / L2：重点项目数量（待明细）" />
         <div class="status-layout">
           <article class="status-card">
             <div class="status-icon">
@@ -35,8 +40,8 @@
         </div>
       </section>
 
-      <section class="panel completion-rate">
-        <h3 class="panel-title">L1：重点项目完成率</h3>
+      <section class="panel completion-rate panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L1：重点项目完成率" />
         <div class="completion-main">
           <article class="completion-ring-card">
             <div class="completion-ring">
@@ -96,9 +101,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SubScreenLayout from '../components/SubScreenLayout.vue'
+import PanelHeader from '../components/PanelHeader.vue'
+import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { keyProjectsData } from '../data/mockDashboard'
+import { useStaggerAnimation } from '../composables/useStaggerAnimation'
+
+const stagger = useStaggerAnimation(2)
+
+const loading = ref(true)
+let loadingTimer = 0
+onMounted(() => {
+  loadingTimer = window.setTimeout(() => { loading.value = false }, 420)
+})
+onUnmounted(() => window.clearTimeout(loadingTimer))
 
 const completionPercent = computed(() => {
   const value = keyProjectsData.completionRate.value
@@ -116,6 +133,10 @@ const completionPercent = computed(() => {
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
   grid-template-rows: minmax(0, 1fr);
   gap: 14px;
+}
+
+.projects-grid--loading {
+  pointer-events: none;
 }
 
 .system-status,
@@ -139,13 +160,6 @@ const completionPercent = computed(() => {
     var(--bg-panel);
 }
 
-.panel-title {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
 .status-layout {
   margin-top: 10px;
   min-height: 0;
@@ -158,7 +172,7 @@ const completionPercent = computed(() => {
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 20px;
+  padding: var(--space-4);
   border-radius: 16px;
   background: var(--subscreen-ring-bg);
   border: 1px solid rgba(90, 204, 255, 0.22);
@@ -188,7 +202,7 @@ const completionPercent = computed(() => {
 }
 
 .status-label {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   letter-spacing: 0.08em;
   line-height: 1.35;
@@ -205,14 +219,14 @@ const completionPercent = computed(() => {
 
 .status-note {
   margin-top: 10px;
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .status-meta {
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
   display: grid;
@@ -224,9 +238,9 @@ const completionPercent = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 2px;
+  padding: var(--space-1) clamp(2px, 0.22vw, 6px);
   border-bottom: 1px solid rgba(90, 204, 255, 0.1);
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
 
   &:last-child {
@@ -235,7 +249,7 @@ const completionPercent = computed(() => {
 
   strong {
     font-family: var(--font-display);
-    font-size: 0.74rem;
+    font-size: var(--text-xs);
     color: var(--text-primary);
     margin-left: 10px;
     text-align: right;
@@ -258,7 +272,7 @@ const completionPercent = computed(() => {
   box-shadow: inset 0 0 20px rgba(90, 204, 255, 0.08);
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: var(--space-2);
 }
 
 .completion-ring {
@@ -289,7 +303,7 @@ const completionPercent = computed(() => {
 }
 
 .ring-label {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin-top: 4px;
 }
@@ -305,19 +319,19 @@ const completionPercent = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
 }
 
 .info-label {
-  font-size: 0.68rem;
+  font-size: var(--text-xs);
   color: var(--text-secondary);
 }
 
 .info-value {
-  font-size: 0.94rem;
+  font-size: var(--text-md);
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
@@ -325,7 +339,7 @@ const completionPercent = computed(() => {
 
 .progress-board {
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: var(--space-2) var(--space-3);
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.12);
   display: grid;
@@ -337,13 +351,13 @@ const completionPercent = computed(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 0.64rem;
+  font-size: var(--text-xxs);
   color: var(--text-secondary);
 
   strong {
     font-family: var(--font-display);
     color: var(--text-primary);
-    font-size: 0.86rem;
+    font-size: var(--text-md);
   }
 }
 
@@ -367,7 +381,7 @@ const completionPercent = computed(() => {
   margin-top: 8px;
   display: flex;
   justify-content: space-between;
-  font-size: 0.56rem;
+  font-size: var(--text-xxs);
   color: var(--text-muted);
 }
 

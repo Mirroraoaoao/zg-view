@@ -29,35 +29,22 @@
     </header>
 
     <main class="portal-layout">
-      <div class="portal-top">
-        <section class="module-column left">
-        <div
-          v-for="item in leftModules"
-          :key="item.name"
-          class="module-card"
+      <!-- 左侧 2/3：经营数据 -->
+      <section class="panel-block panel-left">
+        <div class="panel-heading">
+          <span class="panel-label">经营数据</span>
+          <span class="panel-tag">C1</span>
+          <span class="panel-sub">战略与资本管理</span>
+        </div>
+
+        <!-- 经营数据主区：大图表 + 核心 KPI -->
+        <div class="left-hero"
           role="button"
           tabindex="0"
-          @click="go(item.name)"
-          @keydown.enter="go(item.name)"
-          @keydown.space.prevent="go(item.name)"
+          @click="go(hero.name)"
+          @keydown.enter="go(hero.name)"
+          @keydown.space.prevent="go(hero.name)"
         >
-          <div class="card-top">
-            <div class="card-title">{{ item.title }}</div>
-            <div class="card-tag">{{ item.tag }}</div>
-          </div>
-          <div class="card-desc">{{ item.desc }}</div>
-          <div class="card-footer">
-            <div class="card-metrics">
-              <div v-for="metric in item.metrics" :key="metric.label" class="metric-row">
-                <span class="metric-label">{{ metric.label }}</span>
-                <span class="metric-value">{{ metric.value }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        </section>
-
-        <section class="module-hero" role="button" tabindex="0" @click="go(hero.name)" @keydown.enter="go(hero.name)" @keydown.space.prevent="go(hero.name)">
           <div class="hero-top">
             <div>
               <div class="hero-title">{{ hero.title }}</div>
@@ -73,22 +60,55 @@
             </div>
           </div>
 
-          <div class="hero-charts">
-            <div class="hero-chart">
-              <div class="hero-chart-title">营收趋势</div>
-              <div class="hero-chart-body">
-                <BaseChart :options="heroTrendOption" ariaLabel="营收趋势折线图" />
-              </div>
+          <div class="hero-chart-wrap">
+            <div class="hero-chart-title">营收月度趋势</div>
+            <div class="hero-chart-body">
+              <BaseChart :options="heroTrendOption" ariaLabel="营收趋势折线图" />
             </div>
           </div>
 
           <div class="hero-footer">
-            <span>点击进入经营数据</span>
+            <span>点击查看经营全貌</span>
             <span class="hero-arrow">→</span>
           </div>
-        </section>
+        </div>
 
-        <section class="module-column right">
+        <!-- 左侧 4 个经营子模块 -->
+        <div class="left-modules">
+          <div
+            v-for="item in leftModules"
+            :key="item.name"
+            class="module-card"
+            role="button"
+            tabindex="0"
+            @click="go(item.name)"
+            @keydown.enter="go(item.name)"
+            @keydown.space.prevent="go(item.name)"
+          >
+            <div class="card-top">
+              <div class="card-title">{{ item.title }}</div>
+              <div class="card-tag">{{ item.tag }}</div>
+            </div>
+            <div class="card-desc">{{ item.desc }}</div>
+            <div class="card-metrics">
+              <div v-for="metric in item.metrics" :key="metric.label" class="metric-row">
+                <span class="metric-label">{{ metric.label }}</span>
+                <span class="metric-value">{{ metric.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右侧 1/3：非经营数据 -->
+      <section class="panel-block panel-right">
+        <div class="panel-heading">
+          <span class="panel-label">非经营数据</span>
+          <span class="panel-tag">C2</span>
+          <span class="panel-sub">资源与运营管理</span>
+        </div>
+
+        <div class="right-modules">
           <div
             v-for="item in rightModules"
             :key="item.name"
@@ -104,18 +124,15 @@
               <div class="card-tag">{{ item.tag }}</div>
             </div>
             <div class="card-desc">{{ item.desc }}</div>
-            <div class="card-footer">
-              <div class="card-metrics">
-                <div v-for="metric in item.metrics" :key="metric.label" class="metric-row">
-                  <span class="metric-label">{{ metric.label }}</span>
-                  <span class="metric-value">{{ metric.value }}</span>
-                </div>
+            <div class="card-metrics">
+              <div v-for="metric in item.metrics" :key="metric.label" class="metric-row">
+                <span class="metric-label">{{ metric.label }}</span>
+                <span class="metric-value">{{ metric.value }}</span>
               </div>
             </div>
           </div>
-        </section>
-      </div>
-
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -220,7 +237,6 @@ onMounted(() => {
     now.value = new Date()
   }, 1000)
 
-  // 强制触发重绘，解决首次加载时某些元素不渲染的问题
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       window.dispatchEvent(new Event('resize'))
@@ -237,7 +253,7 @@ onUnmounted(() => {
 .portal {
   width: 100vw;
   height: 100vh;
-  height: 100dvh; /* 动态视口高度，解决移动端地址栏问题 */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   padding: var(--space-2) var(--space-4) var(--space-3);
@@ -245,12 +261,12 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
 
-  // Portal 独有变量
-  --card-gap: clamp(10px, 0.7vw, 18px);
+  --card-gap: clamp(8px, 0.6vw, 14px);
   --card-padding: clamp(8px, 0.55vw, 14px);
   --metric-value: clamp(12px, 0.75vw, 16px);
 }
 
+/* ── 顶部装饰 ── */
 .portal-top-decor {
   position: absolute;
   top: 0;
@@ -265,7 +281,6 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   align-items: flex-start;
- 
 }
 
 .portal-top-decor-center {
@@ -276,15 +291,9 @@ onUnmounted(() => {
   background-size: 100% 100%;
   background-position: center;
   pointer-events: all;
-  image-rendering: -webkit-optimize-contrast;
-  -webkit-mask-image: none;
-  mask-image: none;
-  mask-repeat: initial;
-  mask-size: initial;
-  background-color: initial;
   position: relative;
   z-index: 1;
-  opacity: 0.8
+  opacity: 0.8;
 }
 
 .portal-bottom-decor {
@@ -299,20 +308,16 @@ onUnmounted(() => {
   pointer-events: none;
   z-index: 1;
   filter: saturate(1.1);
-  -webkit-mask-image: none;
-  mask-image: none;
 }
 
-.portal-bottom-decor.left {
-  left: 0;
-}
-
+.portal-bottom-decor.left { left: 0; }
 .portal-bottom-decor.right {
   right: 0;
   transform: scaleX(-1);
   background-position: bottom left;
 }
 
+/* ── 头部 ── */
 .portal-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -342,7 +347,6 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: clamp(8px, 0.7vw, 16px);
-  // padding: clamp(4px, 0.5vw, 10px) clamp(16px, 1.4vw, 30px);
   position: relative;
   overflow: hidden;
 }
@@ -353,21 +357,6 @@ onUnmounted(() => {
   max-height: clamp(48px, 3.8vw, 92px);
   object-fit: contain;
   opacity: 0.9;
-}
-
-.header-side {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  min-height: clamp(32px, 4vh, 56px);
-}
-
-.header-left {
-  justify-self: start;
-}
-
-.header-right {
-  justify-self: end;
 }
 
 .brand-title {
@@ -386,6 +375,37 @@ onUnmounted(() => {
   text-transform: uppercase;
   color: rgba(198, 220, 242, 0.8);
   text-shadow: 0 0 10px rgba(54, 241, 205, 0.2);
+}
+
+.header-side {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: clamp(32px, 4vh, 56px);
+}
+
+.header-left { justify-self: start; }
+.header-right { justify-self: end; }
+
+.time-box {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(4px, 0.4vw, 10px);
+}
+
+.time-box.header-left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.time-main {
+  font-family: var(--font-display);
+  font-size: clamp(12px, 0.75vw, 18px);
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  text-shadow: 0 0 12px rgba(90, 204, 255, 0.35);
 }
 
 .status {
@@ -410,98 +430,97 @@ onUnmounted(() => {
   animation: pulse 1.6s ease-in-out infinite;
 }
 
-.time-box {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: clamp(4px, 0.4vw, 10px);
-}
-
-.time-box.header-left {
-  align-items: flex-start;
-  text-align: left;
-}
-
-.time-main {
-  font-family: var(--font-display);
-  font-size: clamp(12px, 0.75vw, 18px);
-  letter-spacing: 0.14em;
-  color: var(--text-secondary);
-  text-shadow: 0 0 12px rgba(90, 204, 255, 0.35);
-}
-
+/* ── 主布局：左 2/3 + 右 1/3 ── */
 .portal-layout {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: 2fr 1fr;
+  gap: var(--card-gap);
+  overflow: hidden;
+}
+
+/* ── 面板通用 ── */
+.panel-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
-  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.portal-top {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
-  grid-template-areas:
-    'left center right'
-    'left center right'
-    'left center right'
-    'left center right';
-  gap: var(--card-gap);
-  overflow: hidden;
-  overflow-x: visible;
-  padding-top: 6px; // 为卡片 hover 向上移动预留空间
+.panel-label {
+  font-family: var(--font-display);
+  font-size: clamp(13px, 0.85vw, 18px);
+  letter-spacing: 0.16em;
+  color: var(--text-primary);
 }
 
-.module-column.left {
-  grid-area: left;
-  display: flex;
-  flex-direction: column;
-  gap: var(--card-gap);
-  min-height: 0;
-  min-width: 0;
-  padding-top: 6px; // 为 hover 向上移动预留空间
+.panel-tag {
+  font-size: var(--text-xxs);
+  padding: clamp(2px, 0.25vw, 6px) clamp(6px, 0.45vw, 10px);
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--accent-amber);
+  letter-spacing: 0.08em;
 }
 
-.module-column.right {
-  grid-area: right;
-  display: flex;
-  flex-direction: column;
-  gap: var(--card-gap);
-  min-height: 0;
-  min-width: 0;
-  padding-top: 6px; // 为 hover 向上移动预留空间
+.panel-sub {
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
 }
 
-.module-hero {
-  grid-area: center;
-  padding: var(--space-4);
-  border-radius: clamp(18px, 1.4vw, 30px);
-  background: var(--hero-bg);
-  border: 1px solid var(--hero-border);
-  box-shadow: var(--hero-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
-  min-width: 0;
+/* ── 左侧面板布局 ── */
+.panel-left {
+  .left-hero {
+    flex-shrink: 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: clamp(16px, 1.2vw, 26px);
+    background: var(--hero-bg);
+    border: 1px solid var(--hero-border);
+    box-shadow: var(--hero-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-transform), var(--transition-shadow);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--hero-glow);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--nav-hover-shadow);
+    }
+  }
+
+  .left-modules {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--card-gap);
+  }
 }
 
-.module-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--hero-glow);
-  opacity: 0.55;
-  pointer-events: none;
-}
-
+/* ── 英雄区内容 ── */
 .hero-top {
   display: flex;
   justify-content: space-between;
@@ -511,13 +530,13 @@ onUnmounted(() => {
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   letter-spacing: 0.18em;
 }
 
 .hero-sub {
   margin-top: var(--space-1);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--text-secondary);
   letter-spacing: 0.12em;
 }
@@ -534,46 +553,42 @@ onUnmounted(() => {
 
 .hero-metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--space-1);
   z-index: 1;
 }
 
 .hero-metric {
-  padding: var(--space-1) var(--space-2);
-  border-radius: clamp(10px, 0.8vw, 14px);
+  padding: var(--space-1) clamp(6px, 0.5vw, 10px);
+  border-radius: clamp(10px, 0.7vw, 14px);
   background: var(--metric-bg);
   border: 1px solid var(--metric-border);
+
+  .label {
+    font-size: var(--text-xxs);
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .value {
+    margin-top: 2px;
+    font-family: var(--font-display);
+    font-size: clamp(11px, 0.72vw, 15px);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
 }
 
-.hero-metric .label {
-  font-size: var(--text-xxs);
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-}
-
-.hero-metric .value {
-  margin-top: 2px;
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  color: var(--text-primary);
-}
-
-.hero-charts {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2);
+.hero-chart-wrap {
   z-index: 1;
-}
-
-.hero-chart {
   padding: var(--space-2);
-  border-radius: clamp(14px, 1vw, 20px);
+  border-radius: clamp(12px, 0.9vw, 18px);
   background: var(--chart-container-bg);
   border: 1px solid var(--metric-border);
   box-shadow: var(--shadow-soft);
-  position: relative;
-  overflow: hidden;
 }
 
 .hero-chart-title {
@@ -584,36 +599,46 @@ onUnmounted(() => {
 }
 
 .hero-chart-body {
-  height: clamp(140px, 14vh, 240px);
+  height: clamp(80px, 8vh, 140px);
   position: relative;
   z-index: 1;
 }
 
 .hero-footer {
-  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   color: var(--text-secondary);
   z-index: 1;
 }
 
 .hero-arrow {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   color: var(--accent-cyan);
 }
 
+/* ── 右侧面板布局 ── */
+.panel-right {
+  .right-modules {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: var(--card-gap);
+  }
+}
+
+/* ── 通用模块卡片 ── */
 .module-card {
-  flex: 1;
   padding: var(--card-padding);
-  border-radius: clamp(16px, 1vw, 22px);
+  border-radius: clamp(14px, 1vw, 20px);
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: clamp(4px, 0.4vw, 8px);
   cursor: pointer;
   transition:
     var(--transition-transform),
@@ -622,36 +647,34 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
   min-height: 0;
-}
 
-.module-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 16px;
-  right: 16px;
-  height: 2px;
-  background: var(--card-top-line);
-  opacity: 0.45;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: var(--card-top-line);
+    opacity: 0.45;
+  }
 
-.module-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--card-hover-glow);
-  opacity: 0;
-  transition: var(--transition-opacity);
-}
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-hover-glow);
+    opacity: 0;
+    transition: var(--transition-opacity);
+  }
 
-.module-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--nav-hover-border);
-  box-shadow: var(--nav-hover-shadow);
-}
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--nav-hover-border);
+    box-shadow: var(--nav-hover-shadow);
 
-.module-card:hover::after {
-  opacity: 1;
+    &::after { opacity: 1; }
+  }
 }
 
 .card-top {
@@ -670,7 +693,7 @@ onUnmounted(() => {
 
 .card-tag {
   font-size: var(--text-xxs);
-  padding: clamp(2px, 0.3vw, 8px) clamp(6px, 0.5vw, 12px);
+  padding: clamp(2px, 0.25vw, 6px) clamp(5px, 0.4vw, 10px);
   border-radius: 999px;
   border: 1px solid var(--chip-border);
   color: var(--accent-amber);
@@ -681,7 +704,7 @@ onUnmounted(() => {
   font-size: var(--text-xxs);
   color: var(--text-muted);
   letter-spacing: 0.08em;
-  line-height: 1.5;
+  line-height: 1.4;
   z-index: 1;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -689,76 +712,58 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.card-footer {
-  margin-top: var(--space-1);
-  display: grid;
-  gap: var(--space-1);
-  z-index: 1;
-}
-
 .card-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(6px, 0.45vw, 10px);
-}
-
-.card-chart {
-  height: clamp(80px, 8vh, 130px);
-  padding: var(--space-1);
-  border-radius: clamp(12px, 0.8vw, 16px);
-  background: var(--chart-container-bg);
-  border: 1px solid var(--metric-border);
-  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  justify-content: space-evenly;
 }
 
 .metric-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 6px;
-  padding: clamp(4px, 0.45vw, 8px) clamp(6px, 0.55vw, 10px);
-  border-radius: clamp(10px, 0.8vw, 16px);
-  background: var(--kpi-bg);
-  border: 1px solid var(--kpi-border);
-  font-size: var(--text-xxs);
+  gap: clamp(6px, 0.5vw, 12px);
+  padding: clamp(4px, 0.4vw, 8px) 0;
+  border-bottom: 1px solid rgba(90, 204, 255, 0.1);
   min-height: 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .metric-label {
-  color: var(--text-secondary);
-  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  font-size: clamp(11px, 0.65vw, 14px);
   letter-spacing: 0.06em;
-  line-height: 1.2;
-  white-space: nowrap;
+  line-height: 1.3;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60%;
+  white-space: nowrap;
 }
 
 .metric-value {
   font-family: var(--font-display);
   color: var(--text-primary);
-  font-size: var(--metric-value);
+  font-size: clamp(14px, 1vw, 22px);
   line-height: 1.1;
   white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: 0 0 10px rgba(90, 204, 255, 0.25);
 }
 
-
+/* ── 动画 ── */
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.4);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
+  0%   { transform: scale(1);   opacity: 0.6; }
+  50%  { transform: scale(1.4); opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0.6; }
 }
 
+/* ── 响应式 ── */
 @media (max-width: 1200px) {
   .portal-header {
     grid-template-columns: 1fr;
@@ -767,56 +772,30 @@ onUnmounted(() => {
     padding: var(--space-1) var(--space-3);
   }
 
-  .brand {
-    text-align: center;
-  }
+  .brand { text-align: center; }
+  .time-box { align-items: center; text-align: center; }
+  .header-left { order: 2; justify-self: center; }
+  .brand-center { order: 1; }
+  .header-right { order: 3; justify-self: center; }
 
-  .time-box {
-    align-items: center;
-    text-align: center;
-  }
-
-  .header-left {
-    order: 2;
-    justify-self: center;
-  }
-
-  .brand-center {
-    order: 1;
-  }
-
-  .header-right {
-    order: 3;
-    justify-self: center;
-  }
-
-  .portal-top {
+  .portal-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-      'center'
-      'left'
-      'right'
+    grid-template-rows: auto auto;
+    overflow-y: auto;
   }
 
-  .module-column.left,
-  .module-column.right {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-2);
+  .panel-left .left-modules {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .module-card {
-    flex: 1 1 calc(50% - 12px);
+  .hero-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .card-metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-charts {
-    grid-template-columns: 1fr;
+  .panel-right .right-modules {
+    grid-template-rows: unset;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
 </style>

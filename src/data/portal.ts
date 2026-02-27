@@ -6,7 +6,7 @@ export const portalData = {
   },
   hero: {
     name: 'overall',
-    title: '经营数据',
+    title: '集团营收数据',
     subtitle: '集团核心经营成果总览',
     badge: '核心入口',
     metrics: [
@@ -47,10 +47,9 @@ export const portalData = {
       tag: '融资',
       desc: '融资计划执行与成本结构',
       metrics: [
-        { label: '年度融资计划总额', value: '￥ 320 亿' },
-        { label: '年度融资计划剩余额度', value: '￥ 110 亿' },
-        { label: '集团综合融资成本率', value: '4.2%' },
-        { label: '负债期限结构', value: '长58%/短42%' }
+        { label: '年度融资计划已完成额', value: '￥ 210 亿' },
+        { label: '银行贷款余额', value: '￥ 180 亿' },
+        { label: '长期融资占比', value: '58%' }
       ],
       chart: null
     },
@@ -60,35 +59,13 @@ export const portalData = {
       tag: '投资',
       desc: '投资规模与上市公司市值',
       metrics: [
-        { label: '投资总额', value: '￥ 120 亿' },
-        { label: '项目总数量', value: '24 项' },
-        { label: '控股上市公司市值', value: '￥ 860 亿' }
-      ],
-      chart: null
-    },
-    {
-      name: 'projects',
-      title: '重点项目',
-      tag: '调度',
-      desc: '年度重点项目进度管理',
-      metrics: [
-        { label: '重点项目数量', value: '待明细' },
-        { label: '重点项目完成率', value: '62%' }
-      ],
-      chart: null
-    }
-  ],
-  rightModules: [
-    {
-      name: 'asset',
-      title: '资产管理',
-      tag: '运营',
-      desc: '房产销售去化与物业租赁',
-      metrics: [
-        { label: '物业总体出租率', value: '85%' },
-        { label: '年度房产销售额', value: '￥ 68 亿' },
-        { label: '年度房产销售面积', value: '86 万㎡' },
-        { label: '可售房产面积', value: '420 万㎡' }
+        { label: '可售房产面积总量', value: '312 万㎡' },
+        { label: '基金投资总额', value: '￥ 120 亿' },
+        { label: '股权项目总数量', value: '14 项' },
+        { label: '基金项目总数量', value: '10 项' },
+        { label: '投资回报率（ROI）', value: '8.6%' },
+        { label: '控股上市公司市值', value: '￥ 860 亿' },
+        { label: '年度分红', value: '￥ 12 亿' }
       ],
       chart: null
     },
@@ -98,10 +75,39 @@ export const portalData = {
       tag: '招商',
       desc: '招商增量与风险量化',
       metrics: [
-        { label: '合作区/珠海市重大项目招引', value: '18 项' },
+        { label: '合作区重大项目新招引', value: '6 项' },
+        { label: '合作区重大项目累计招引', value: '10 项' },
+        { label: '珠海市重大项目新招引', value: '4 项' },
+        { label: '珠海市重大项目累计招引', value: '8 项' },
         { label: '合作区招引企业税收贡献', value: '￥ 20 亿' },
-        { label: '诉讼项目数量', value: '7 项' },
-        { label: '珠海招引企业税收贡献', value: '￥ 22 亿' }
+        { label: '珠海招引企业税收贡献', value: '￥ 22 亿' },
+        { label: '诉讼项目数量', value: '7 项' }
+      ],
+      chart: null
+    },
+    {
+      name: 'asset',
+      title: '资产管理',
+      tag: '运营',
+      desc: '房产销售去化与物业租赁',
+      metrics: [
+        { label: '可售房产面积总量', value: '420 万㎡' },
+        { label: '年度房产销售额', value: '￥ 68 亿' },
+        { label: '年度累计租金收入', value: '￥ 18 亿' },
+        { label: '物业总体出租率', value: '85%' }
+      ],
+      chart: null
+    }
+  ],
+  rightModules: [
+    {
+      name: 'projects',
+      title: '重点项目',
+      tag: '调度',
+      desc: '年度重点项目进度管理',
+      metrics: [
+        { label: '年度重点任务数量', value: '48 项' },
+        { label: '已办结数量', value: '30 项' }
       ],
       chart: null
     },
@@ -113,7 +119,6 @@ export const portalData = {
       metrics: [
         { label: '集团总人数', value: '12,504' },
         { label: '各版块总人数', value: '8,256' },
-        { label: '各上市公司总人数', value: '4,248' },
         { label: '党员占比', value: '72%' }
       ],
       chart: null
@@ -124,8 +129,7 @@ export const portalData = {
       tag: '督办',
       desc: '领导行程与督办执行',
       metrics: [
-        { label: '督办事项完成率', value: '85%' },
-        { label: '三会议召开次数', value: '36 次' }
+        { label: '督办事项完成率', value: '85%' }
       ],
       chart: null
     }

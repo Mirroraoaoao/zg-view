@@ -1,11 +1,13 @@
 <template>
   <SubScreenLayout title="资产管理" subtitle="Asset Management" meta="数据更新时间 08:30">
     <div v-if="loading" class="asset-grid asset-grid--loading">
-      <SkeletonPanel class="skeleton-slot" />
-      <SkeletonPanel class="skeleton-slot" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--operation" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--sales" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--disposal" />
     </div>
 
     <div v-else class="asset-grid">
+      <!-- L1: 物业资产盘活 / L2: 资产运营 -->
       <section class="panel operation-panel panel-animate-in" :style="stagger[0]">
         <div class="section-head">
           <PanelHeader title="L1：物业资产盘活 · L2：资产运营" />
@@ -69,7 +71,7 @@
                   <div class="area-value">{{ assetData.rental.area.rented }}</div>
                 </div>
                 <div class="area-kpi highlight">
-                  <div class="area-label">租金收入</div>
+                  <div class="area-label">年度累计租金收入</div>
                   <div class="area-value">{{ assetData.rental.income }}</div>
                 </div>
               </div>
@@ -87,6 +89,7 @@
         </svg>
       </section>
 
+      <!-- L2: 资产去化 -->
       <section class="panel sales-panel panel-animate-in" :style="stagger[1]">
         <div class="section-head">
           <PanelHeader title="L2：资产去化" />
@@ -95,23 +98,27 @@
         <div class="section-title">L3：销售与可售库存</div>
 
         <div class="sales-kpis">
+          <div class="sales-kpi">
+            <div class="sales-label">L3：可售房产面积总量</div>
+            <div class="sales-value">{{ assetData.sales.availableArea }}</div>
+          </div>
+          <div class="sales-kpi">
+            <div class="sales-label">L3：年度房产销售面积</div>
+            <div class="sales-value">{{ assetData.sales.annualArea }}</div>
+          </div>
           <div class="sales-kpi primary">
-            <div class="sales-label">年度房产销售额</div>
+            <div class="sales-label">L3：年度房产销售额</div>
             <div class="sales-value">{{ assetData.sales.annualAmount }}</div>
           </div>
           <div class="sales-kpi">
-            <div class="sales-label">年度房产销售面积</div>
-            <div class="sales-value">{{ assetData.sales.annualArea }}</div>
-          </div>
-          <div class="sales-kpi">
-            <div class="sales-label">可售房产面积</div>
-            <div class="sales-value">{{ assetData.sales.availableArea }}</div>
+            <div class="sales-label">L3：年度房产销售目标</div>
+            <div class="sales-value">{{ assetData.sales.annualTarget }}</div>
           </div>
         </div>
 
         <div class="completion-progress">
           <div class="completion-head">
-            <span>年度房产销售额完成率</span>
+            <span>L3：年度房产销售额完成率</span>
             <strong>{{ assetData.sales.completionRate }}</strong>
           </div>
           <div class="progress">
@@ -121,6 +128,25 @@
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- L3: 其他去化方式完成额 -->
+      <section class="panel disposal-panel panel-animate-in" :style="stagger[2]">
+        <PanelHeader title="L3：其他去化方式完成额" />
+        <div class="disposal-list">
+          <div class="disposal-item">
+            <div class="disposal-label">L4：大宗交易完成额</div>
+            <div class="disposal-value">{{ assetData.sales.otherDisposal.bulkTransaction }}</div>
+          </div>
+          <div class="disposal-item">
+            <div class="disposal-label">L4：退地完成额</div>
+            <div class="disposal-value">{{ assetData.sales.otherDisposal.landReturn }}</div>
+          </div>
+          <div class="disposal-item">
+            <div class="disposal-label">L4：资产证券化完成额</div>
+            <div class="disposal-value">{{ assetData.sales.otherDisposal.assetSecuritization }}</div>
           </div>
         </div>
       </section>
@@ -136,7 +162,7 @@ import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { assetData } from '../data/mockDashboard'
 import { useStaggerAnimation } from '../composables/useStaggerAnimation'
 
-const stagger = useStaggerAnimation(2)
+const stagger = useStaggerAnimation(3)
 
 const loading = ref(true)
 let loadingTimer = 0
@@ -163,8 +189,11 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 0.6fr);
+  grid-template-areas:
+    'operation sales'
+    'operation disposal';
   gap: 14px;
 }
 
@@ -172,7 +201,12 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   pointer-events: none;
 }
 
+.skeleton-slot--operation { grid-area: operation; }
+.skeleton-slot--sales { grid-area: sales; }
+.skeleton-slot--disposal { grid-area: disposal; }
+
 .operation-panel {
+  grid-area: operation;
   position: relative;
   min-height: 0;
   display: grid;
@@ -184,6 +218,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .sales-panel {
+  grid-area: sales;
   position: relative;
   min-height: 0;
   display: grid;
@@ -194,17 +229,15 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
     var(--bg-panel);
 }
 
-.operation-panel::before,
-.sales-panel::before {
-  content: '';
-  position: absolute;
-  inset: auto 8% -120px auto;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(90, 204, 255, 0.14), transparent 72%);
-  filter: blur(14px);
-  pointer-events: none;
+.disposal-panel {
+  grid-area: disposal;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background:
+    radial-gradient(108% 72% at 0% 100%, rgba(54, 241, 205, 0.08), transparent 58%),
+    radial-gradient(92% 68% at 100% 0%, rgba(90, 204, 255, 0.1), transparent 60%),
+    var(--bg-panel);
 }
 
 .section-head {
@@ -233,6 +266,12 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   border-color: rgba(90, 204, 255, 0.5);
   background: rgba(90, 204, 255, 0.2);
   color: var(--text-primary);
+}
+
+.section-title {
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
 }
 
 .operation-layout {
@@ -418,10 +457,10 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   color: var(--text-primary);
 }
 
+/* 资产去化 */
 .sales-kpis {
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1.2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 8px;
   min-height: 0;
@@ -445,11 +484,11 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 .sales-label {
   font-size: var(--text-xxs);
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .sales-value {
-  font-size: 1.28rem;
+  font-size: 1.15rem;
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
@@ -457,7 +496,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
 }
 
 .sales-kpi.primary .sales-value {
-  font-size: 1.95rem;
+  font-size: 1.4rem;
   color: #e9fbff;
 }
 
@@ -506,16 +545,44 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   color: var(--text-muted);
 }
 
+/* 其他去化方式 */
+.disposal-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.disposal-item {
+  padding: var(--space-2) var(--space-3);
+  border-radius: 12px;
+  background: var(--subscreen-subcard-bg);
+  border: 1px solid rgba(90, 204, 255, 0.1);
+}
+
+.disposal-label {
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.disposal-value {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 @media (max-width: 1200px) {
   .asset-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    grid-template-areas:
+      'operation'
+      'sales'
+      'disposal';
     overflow-y: auto;
-  }
-
-  .operation-panel,
-  .sales-panel {
-    display: block;
   }
 
   .operation-layout {
@@ -532,7 +599,7 @@ const rateWidth = (value: string) => `${clampPercent(value)}%`
   }
 
   .sales-kpis {
-    grid-template-rows: auto;
+    grid-template-columns: 1fr;
   }
 }
 </style>

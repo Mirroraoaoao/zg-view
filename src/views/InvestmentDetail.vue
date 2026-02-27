@@ -1,67 +1,106 @@
 <template>
   <SubScreenLayout title="投资运营" subtitle="Investment Operations" meta="数据更新时间 08:30">
     <div v-if="loading" class="investment-grid investment-grid--loading">
-      <SkeletonPanel class="skeleton-slot" />
-      <SkeletonPanel class="skeleton-slot" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--core" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--exit" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--post" />
     </div>
 
     <div v-else class="investment-grid">
-      <section class="panel core-metrics panel-animate-in" :style="stagger[0]">
-        <PanelHeader title="L1：核心投资指标 / L2：投资核心指标看板" />
-        <div class="core-layout">
-          <article class="hero-metric primary">
-            <div class="hero-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </div>
-            <div class="hero-content">
-              <div class="hero-label">投资总额</div>
-              <div class="hero-value">{{ investmentData.core.investmentTotal }}</div>
-              <div class="hero-foot">年度累计口径</div>
-            </div>
-            <div class="hero-badge">核心指标</div>
-          </article>
-
-          <div class="core-right">
-            <article class="hero-metric secondary">
-              <div class="hero-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M9 12h6M12 9v6" />
-                </svg>
-              </div>
-              <div class="hero-content">
-                <div class="hero-label">项目总数量</div>
-                <div class="hero-value">{{ investmentData.core.projectCount }}</div>
-                <div class="hero-foot">在管项目</div>
-              </div>
-              <div class="hero-badge">项目池</div>
-            </article>
-
-            <article class="core-summary">
-              <div class="summary-head">指标速览</div>
-              <div class="summary-row">
-                <span>投资总额</span>
-                <strong>{{ investmentData.core.investmentTotal }}</strong>
-              </div>
-              <div class="summary-row">
-                <span>项目总数量</span>
-                <strong>{{ investmentData.core.projectCount }}</strong>
-              </div>
-            </article>
+      <!-- L1: 核心投资指标 -->
+      <section class="panel core-panel panel-animate-in" :style="stagger[0]">
+        <PanelHeader title="L1：核心投资指标" />
+        <div class="core-kpis">
+          <div class="core-kpi">
+            <div class="kpi-label">L2：可售房产面积总量</div>
+            <div class="kpi-value">{{ investmentData.core.availablePropertyArea }}</div>
+          </div>
+          <div class="core-kpi highlight">
+            <div class="kpi-label">L2：基金投资总额</div>
+            <div class="kpi-value">{{ investmentData.core.fundInvestmentTotal }}</div>
+          </div>
+          <div class="core-kpi">
+            <div class="kpi-label">L2：股权项目总数量</div>
+            <div class="kpi-value">{{ investmentData.core.equityProjectCount }}</div>
+          </div>
+          <div class="core-kpi">
+            <div class="kpi-label">L2：基金项目总数量</div>
+            <div class="kpi-value">{{ investmentData.core.fundProjectCount }}</div>
+          </div>
+          <div class="core-kpi highlight">
+            <div class="kpi-label">L2：投资回报率（ROI）</div>
+            <div class="kpi-value accent">{{ investmentData.core.roi }}</div>
           </div>
         </div>
       </section>
 
-      <section class="panel market-value panel-animate-in" :style="stagger[1]">
+      <!-- L1: 投资指标趋势与对标分析 -->
+      <section class="panel exit-panel panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L1：投资指标趋势与对标分析" />
+        <div class="exit-layout">
+          <div class="exit-section">
+            <div class="section-title">L2：年度投资项目退出数量</div>
+            <div class="exit-count">{{ investmentData.exitAnalysis.annualExitCount }} 项</div>
+            <div class="section-title">L3：年度投资项目退出明细</div>
+            <div class="exit-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">项目名称</th>
+                    <th scope="col">退出金额</th>
+                    <th scope="col">退出方式</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in investmentData.exitAnalysis.annualExitDetails" :key="item.name">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.type }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="exit-section">
+            <div class="section-title">L2：年度退出收益总额</div>
+            <div class="exit-count">{{ investmentData.exitAnalysis.annualExitRevenueTotal }}</div>
+            <div class="section-title">L3：年度投资项目退出总额明细</div>
+            <div class="exit-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">项目名称</th>
+                    <th scope="col">退出收益</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in investmentData.exitAnalysis.annualExitRevenueDetails" :key="item.name">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.revenue }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- L1: 投后运营与效益 -->
+      <section class="panel post-panel panel-animate-in" :style="stagger[2]">
         <PanelHeader title="L1：投后运营与效益 / L2：投资公司管理" />
-        <div class="market-layout">
-          <article class="market-value-main">
-            <div class="market-label">控股上市公司市值</div>
-            <div class="market-value-number">{{ investmentData.core.listedCompanyMarketValue }}</div>
-            <div class="market-foot">当前口径</div>
-          </article>
+        <div class="post-layout">
+          <div class="post-main">
+            <article class="post-kpi-card primary">
+              <div class="post-label">L3：控股上市公司市值</div>
+              <div class="post-value">{{ investmentData.postInvestment.listedCompanyMarketValue }}</div>
+              <div class="post-foot">当前口径</div>
+            </article>
+            <article class="post-kpi-card">
+              <div class="post-label">L3：年度分红</div>
+              <div class="post-value">{{ investmentData.postInvestment.annualDividend }}</div>
+              <div class="post-foot">年度累计</div>
+            </article>
+          </div>
 
           <article class="trend-panel">
             <div class="trend-head">市值趋势（{{ marketTrendRange }}）</div>
@@ -71,7 +110,7 @@
                   <span class="trend-fill" :style="{ height: item.height }"></span>
                 </div>
                 <span class="trend-year">{{ item.label }}</span>
-                <span class="trend-value">{{ item.value }}</span>
+                <span class="trend-val">{{ item.value }}</span>
               </div>
             </div>
           </article>
@@ -89,7 +128,7 @@ import SkeletonPanel from '../components/SkeletonPanel.vue'
 import { investmentData } from '../data/mockDashboard'
 import { useStaggerAnimation } from '../composables/useStaggerAnimation'
 
-const stagger = useStaggerAnimation(2)
+const stagger = useStaggerAnimation(3)
 
 const loading = ref(true)
 let loadingTimer = 0
@@ -130,8 +169,11 @@ const marketTrendRange = computed(() => {
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'core exit'
+    'post exit';
   gap: 14px;
 }
 
@@ -139,196 +181,176 @@ const marketTrendRange = computed(() => {
   pointer-events: none;
 }
 
-.core-metrics,
-.market-value {
+.skeleton-slot--core { grid-area: core; }
+.skeleton-slot--exit { grid-area: exit; }
+.skeleton-slot--post { grid-area: post; }
+
+.core-panel {
+  grid-area: core;
+}
+
+.exit-panel {
+  grid-area: exit;
+}
+
+.post-panel {
+  grid-area: post;
+}
+
+.core-panel,
+.exit-panel,
+.post-panel {
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-}
-
-.core-metrics {
   background:
-    radial-gradient(110% 74% at 0% 100%, rgba(54, 241, 205, 0.08), transparent 58%),
-    radial-gradient(90% 68% at 100% 0%, rgba(90, 204, 255, 0.1), transparent 60%),
+    radial-gradient(108% 72% at 0% 100%, rgba(54, 241, 205, 0.08), transparent 58%),
+    radial-gradient(92% 68% at 100% 0%, rgba(90, 204, 255, 0.1), transparent 60%),
     var(--bg-panel);
 }
 
-.market-value {
-  background:
-    radial-gradient(105% 76% at 100% 100%, rgba(90, 204, 255, 0.1), transparent 62%),
-    radial-gradient(90% 68% at 0% 0%, rgba(54, 241, 205, 0.06), transparent 58%),
-    var(--bg-panel);
-}
-
-.core-layout {
+/* L1: 核心投资指标 */
+.core-kpis {
   margin-top: 10px;
-  min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  gap: 12px;
-}
-
-.core-right {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   min-height: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 12px;
+  overflow: auto;
 }
 
-.hero-metric {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: var(--space-4);
-  border-radius: 14px;
-  background: var(--subscreen-subcard-bg);
-  border: 1px solid rgba(90, 204, 255, 0.14);
-  min-height: 0;
-
-  &.primary {
-    border-color: rgba(54, 241, 205, 0.26);
-    background: linear-gradient(135deg, rgba(54, 241, 205, 0.15) 0%, rgba(90, 204, 255, 0.07) 100%);
-    box-shadow: inset 0 0 20px rgba(54, 241, 205, 0.08);
-  }
-
-  &.secondary {
-    background: linear-gradient(135deg, rgba(90, 204, 255, 0.14) 0%, rgba(54, 241, 205, 0.06) 100%);
-    border-color: rgba(90, 204, 255, 0.24);
-
-    .hero-icon {
-      background: rgba(90, 204, 255, 0.18);
-      color: var(--accent-blue);
-    }
-  }
+.core-kpis .core-kpi:last-child {
+  grid-column: 1 / -1;
 }
 
-.hero-icon {
-  width: 48px;
-  height: 48px;
+.core-kpi {
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
-  background: rgba(54, 241, 205, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-cyan);
-  flex-shrink: 0;
-
-  svg {
-    width: 26px;
-    height: 26px;
-  }
+  background: var(--subscreen-subcard-bg);
+  border: 1px solid rgba(90, 204, 255, 0.1);
+  display: grid;
+  align-content: center;
 }
 
-.hero-content {
-  flex: 1;
-  min-width: 0;
+.core-kpi.highlight {
+  border-color: rgba(90, 204, 255, 0.22);
+  background: var(--subscreen-ring-bg);
+  box-shadow: inset 0 0 14px rgba(90, 204, 255, 0.08);
 }
 
-.hero-label {
-  font-size: var(--text-xs);
+.core-kpi .kpi-label {
+  font-size: var(--text-xxs);
   color: var(--text-muted);
   letter-spacing: 0.06em;
   margin-bottom: 6px;
 }
 
-.hero-value {
-  font-size: 1.46rem;
+.core-kpi .kpi-value {
   font-family: var(--font-display);
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.15;
 }
 
-.hero-foot {
-  margin-top: 8px;
-  font-size: var(--text-xxs);
-  color: var(--text-secondary);
-  letter-spacing: 0.08em;
-}
-
-.hero-badge {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: clamp(3px, 0.25vw, 6px) var(--space-2);
-  border-radius: 12px;
-  background: rgba(54, 241, 205, 0.12);
-  font-size: var(--text-xxs);
+.core-kpi .kpi-value.accent {
   color: var(--accent-cyan);
-  letter-spacing: 0.08em;
 }
 
-.core-summary {
-  border-radius: 12px;
-  padding: var(--space-2) var(--space-3);
-  background: var(--subscreen-subcard-bg);
-  border: 1px solid rgba(90, 204, 255, 0.12);
-}
-
-.summary-head {
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-1) 0;
-  border-top: 1px solid rgba(90, 204, 255, 0.12);
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-
-  &:first-of-type {
-    border-top: none;
-    padding-top: 0;
-  }
-
-  strong {
-    font-family: var(--font-display);
-    color: var(--text-primary);
-    font-size: var(--text-sm);
-  }
-}
-
-.market-layout {
+/* L1: 投资指标趋势与对标分析 */
+.exit-layout {
   margin-top: 10px;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.market-value-main {
+.exit-section {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 6px;
+  padding: var(--space-2);
+  border-radius: 12px;
+  background: var(--subscreen-card-bg);
+  border: 1px solid rgba(90, 204, 255, 0.14);
+}
+
+.section-title {
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.exit-count {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.exit-table-wrap {
+  min-height: 0;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(90, 204, 255, 0.1);
+  background: var(--subscreen-subcard-bg);
+  padding: clamp(2px, 0.2vw, 6px);
+}
+
+.exit-table-wrap .data-table {
+  margin-top: 0;
+}
+
+/* L1: 投后运营与效益 */
+.post-layout {
+  margin-top: 10px;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+}
+
+.post-main {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+}
+
+.post-kpi-card {
   border-radius: 14px;
-  border: 1px solid rgba(90, 204, 255, 0.2);
-  background: var(--subscreen-ring-bg);
+  border: 1px solid rgba(90, 204, 255, 0.14);
+  background: var(--subscreen-subcard-bg);
   display: grid;
   place-items: center;
   padding: var(--space-3);
-  box-shadow: inset 0 0 24px rgba(90, 204, 255, 0.08);
+  text-align: center;
 }
 
-.market-label {
-  font-size: var(--text-xs);
+.post-kpi-card.primary {
+  border-color: rgba(90, 204, 255, 0.22);
+  background: var(--subscreen-ring-bg);
+  box-shadow: inset 0 0 20px rgba(90, 204, 255, 0.08);
+}
+
+.post-label {
+  font-size: var(--text-xxs);
   color: var(--text-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
-.market-value-number {
+.post-value {
   margin-top: 8px;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
   text-shadow: 0 0 12px rgba(90, 204, 255, 0.2);
 }
 
-.market-foot {
-  margin-top: 8px;
+.post-foot {
+  margin-top: 6px;
   font-size: var(--text-xxs);
   color: var(--text-secondary);
   letter-spacing: 0.08em;
@@ -390,7 +412,7 @@ const marketTrendRange = computed(() => {
   color: var(--text-muted);
 }
 
-.trend-value {
+.trend-val {
   font-size: var(--text-xxs);
   color: var(--text-secondary);
   font-family: var(--font-display);
@@ -399,24 +421,24 @@ const marketTrendRange = computed(() => {
 @media (max-width: 1280px) {
   .investment-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      'core'
+      'exit'
+      'post';
     overflow-y: auto;
   }
 
-  .core-layout {
+  .exit-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
   }
 
-  .core-right {
-    grid-template-rows: auto auto;
+  .post-layout {
+    grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 900px) {
-  .trend-bars {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+  .core-kpis {
+    grid-template-columns: 1fr;
   }
 }
 </style>

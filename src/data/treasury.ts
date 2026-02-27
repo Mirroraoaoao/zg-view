@@ -3,18 +3,21 @@ export const treasuryData = {
     l1: '融资管理',
     l2: ['融资进度', '融资成本与结构管理']
   },
-  // 融资管理
+  // L1: 融资管理 / L2: 融资进度
   financing: {
     planTotal: '￥ 320 亿',
     planRemaining: '￥ 110 亿',
     planCompleted: '￥ 210 亿',
-    channels: {
-      bankLoan: { amount: '￥ 180 亿', ratio: '56%' },
-      bond: { amount: '￥ 90 亿', ratio: '28%' },
-      trust: { amount: '￥ 50 亿', ratio: '16%' }
+    // L3: 融资余额
+    balances: {
+      bankLoan: '￥ 180 亿',
+      bond: '￥ 90 亿',
+      trust: '￥ 50 亿',
+      financingLease: '￥ 35 亿',
+      other: '￥ 12 亿'
     }
   },
-  // 融资成本与结构管理
+  // L2: 融资成本与结构管理
   cost: {
     overallRate: '4.2%',
     termStructure: {

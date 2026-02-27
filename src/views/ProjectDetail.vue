@@ -11,44 +11,46 @@
     </div>
 
     <div v-else class="operation-grid">
+      <!-- L1: 产业招商 -->
       <section class="panel investment-panel panel-animate-in" :style="stagger[0]">
         <PanelHeader title="L1：产业招商" />
         <div class="investment-kpis">
           <div class="investment-kpi">
             <div class="kpi-header">
-              <span class="kpi-label">合作区重大项目招引（新招引、累计招引）</span>
+              <span class="kpi-label">L2：合作区重大项目招引（新招引、累计招引）</span>
               <span class="kpi-badge">合作区</span>
             </div>
             <div class="kpi-value">新 {{ operationData.investment.hengqin.newProjects }} / 累计 {{ operationData.investment.hengqin.totalProjects }}</div>
           </div>
           <div class="investment-kpi">
             <div class="kpi-header">
-              <span class="kpi-label">珠海市重大项目招引（新招引、累计招引）</span>
+              <span class="kpi-label">L2：珠海市重大项目招引（新招引、累计招引）</span>
               <span class="kpi-badge zhuhai">珠海</span>
             </div>
             <div class="kpi-value">新 {{ operationData.investment.zhuhai.newProjects }} / 累计 {{ operationData.investment.zhuhai.totalProjects }}</div>
           </div>
           <div class="investment-kpi highlight">
-            <div class="kpi-label">合作区招引企业税收贡献</div>
+            <div class="kpi-label">L2：合作区招引企业税收贡献</div>
             <div class="kpi-value large">{{ operationData.investment.hengqin.taxContribution }}</div>
           </div>
           <div class="investment-kpi">
-            <div class="kpi-label">珠海招引企业税收贡献</div>
+            <div class="kpi-label">L2：珠海招引企业税收贡献</div>
             <div class="kpi-value large">{{ operationData.investment.zhuhai.taxContribution }}</div>
           </div>
         </div>
       </section>
 
+      <!-- L2: 工业产值与新增签约面积（按载体） -->
       <section class="panel industry-panel panel-animate-in" :style="stagger[1]">
         <PanelHeader title="L2：工业产值与新增签约面积（按载体）" />
         <div class="industry-main">
           <div class="industry-kpi primary">
-            <div class="industry-label">工业产值</div>
+            <div class="industry-label">L2：工业产值</div>
             <div class="industry-value">{{ operationData.investment.industrialOutput }}</div>
           </div>
         </div>
         <div class="signed-area">
-          <div class="signed-title">新增签约面积（按载体）</div>
+          <div class="signed-title">L2：新增签约面积（按载体）</div>
           <div class="signed-list">
             <div class="signed-item">
               <span>园区</span>
@@ -66,6 +68,7 @@
         </div>
       </section>
 
+      <!-- L1: 风险应对 -->
       <section class="panel risk-panel panel-animate-in" :style="stagger[2]">
         <PanelHeader title="L1：风险应对" />
         <div class="risk-list">
@@ -77,7 +80,7 @@
               </svg>
             </div>
             <div class="risk-info">
-              <div class="risk-label">诉讼项目数量</div>
+              <div class="risk-label">L2：诉讼项目数量</div>
               <div class="risk-value">{{ operationData.risk.lawsuitCount }} 项</div>
             </div>
           </div>
@@ -88,7 +91,7 @@
               </svg>
             </div>
             <div class="risk-info">
-              <div class="risk-label">投资亏损金额</div>
+              <div class="risk-label">L2：投资亏损金额</div>
               <div class="risk-value">{{ operationData.risk.investmentLoss }}</div>
             </div>
           </div>
@@ -99,7 +102,7 @@
               </svg>
             </div>
             <div class="risk-info">
-              <div class="risk-label">资产减值金额</div>
+              <div class="risk-label">L2：资产减值金额</div>
               <div class="risk-value">{{ operationData.risk.assetImpairment }}</div>
             </div>
           </div>
@@ -110,88 +113,115 @@
               </svg>
             </div>
             <div class="risk-info">
-              <div class="risk-label">其他经营类风险（安全风险）</div>
+              <div class="risk-label">L2：其他经营类风险（安全风险）</div>
               <div class="risk-value">{{ operationData.risk.safetyRisk }}</div>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- L1: 投资情况 -->
       <section class="panel construction-panel panel-animate-in" :style="stagger[3]">
         <PanelHeader title="L1：投资情况" />
         <div class="construction-main">
           <div class="construction-kpi">
-            <div class="construction-label">固定资产投资完成情况</div>
+            <div class="construction-label">L2：固定资产投资完成情况</div>
             <div class="construction-value">{{ operationData.fixedAssetInvestment.completed }}</div>
             <div class="construction-rate">
               <div class="progress">
                 <div class="progress-bar" :style="{ width: operationData.fixedAssetInvestment.rate }"></div>
               </div>
-              <span>完成率 {{ operationData.fixedAssetInvestment.rate }}</span>
+              <span>L2：年度固定资产投资计划完成率 {{ operationData.fixedAssetInvestment.rate }}</span>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- L1: 人力 -->
       <section class="panel hr-panel panel-animate-in" :style="stagger[4]">
         <PanelHeader title="L1：人力" />
         <div class="hr-kpis">
           <div class="hr-kpi">
-            <div class="hr-label">人均产出</div>
-            <div class="hr-value">{{ operationData.hrBusiness.perCapitaOutput }}</div>
-          </div>
-          <div class="hr-kpi">
-            <div class="hr-label">在岗人数</div>
+            <div class="hr-label">L2：在岗人数</div>
             <div class="hr-value">{{ operationData.hrBusiness.headcount }}</div>
           </div>
         </div>
       </section>
 
+      <!-- L1: 资金情况 -->
       <section class="panel fund-panel panel-animate-in" :style="stagger[5]">
         <PanelHeader title="L1：资金情况" />
         <div class="fund-list">
           <div class="fund-item">
-            <span>资金整体情况</span>
+            <span>L2：资金整体情况</span>
             <strong class="stable">{{ operationData.fundStatus.overall }}</strong>
           </div>
           <div class="fund-item">
-            <span>融资情况</span>
+            <span>L2：融资情况</span>
             <strong>{{ operationData.fundStatus.financing }}</strong>
           </div>
           <div class="fund-item">
-            <span>集团综合融资成本率</span>
+            <span>L2：集团综合融资成本率</span>
             <strong>{{ operationData.fundStatus.comprehensiveFinancingCostRate }}</strong>
           </div>
           <div class="fund-item highlight">
-            <span>有息负债余额</span>
+            <span>L2：有息负债余额</span>
             <strong>{{ operationData.fundStatus.interestBearingDebt }}</strong>
           </div>
         </div>
       </section>
 
+      <!-- L1: 资产运营情况 -->
       <section class="panel summary-panel panel-animate-in" :style="stagger[6]">
         <PanelHeader title="L1：资产运营情况" />
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th scope="col">项目名称</th>
-                <th scope="col">已售面积</th>
-                <th scope="col">去化率</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in operationData.assetOperations.projectSales" :key="item.name">
-                <td>{{ item.name }}</td>
-                <td>{{ item.sold }}</td>
-                <td>{{ item.rate }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="asset-total">
-          <span>本年度已盘活资产规模</span>
-          <strong>{{ operationData.assetOperations.revitalizedAssets }}</strong>
+        <div class="asset-ops-layout">
+          <div class="asset-ops-kpis">
+            <div class="asset-ops-kpi">
+              <span>L2：可售房产面积总量</span>
+              <strong>{{ operationData.assetOperations.availablePropertyArea }}</strong>
+            </div>
+            <div class="asset-ops-kpi">
+              <span>L2：办公物业出租率</span>
+              <strong>{{ operationData.assetOperations.officeRentalRate }}</strong>
+            </div>
+            <div class="asset-ops-kpi">
+              <span>L2：厂房物业出租率</span>
+              <strong>{{ operationData.assetOperations.factoryRentalRate }}</strong>
+            </div>
+            <div class="asset-ops-kpi">
+              <span>L2：公寓物业出租率</span>
+              <strong>{{ operationData.assetOperations.apartmentRentalRate }}</strong>
+            </div>
+            <div class="asset-ops-kpi">
+              <span>L2：商业物业出租率</span>
+              <strong>{{ operationData.assetOperations.commercialRentalRate }}</strong>
+            </div>
+          </div>
+          <div class="asset-ops-detail">
+            <div class="section-subtitle">L2：房产销售去化情况（按项目）</div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">项目名称</th>
+                    <th scope="col">已售面积</th>
+                    <th scope="col">去化率</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in operationData.assetOperations.projectSales" :key="item.name">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.sold }}</td>
+                    <td>{{ item.rate }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="asset-total">
+              <span>L2：本年度已盘活资产规模</span>
+              <strong>{{ operationData.assetOperations.revitalizedAssets }}</strong>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -243,33 +273,13 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
 .skeleton-slot--fund { grid-area: fund; }
 .skeleton-slot--summary { grid-area: summary; }
 
-.investment-panel {
-  grid-area: investment;
-}
-
-.industry-panel {
-  grid-area: industry;
-}
-
-.risk-panel {
-  grid-area: risk;
-}
-
-.construction-panel {
-  grid-area: construction;
-}
-
-.hr-panel {
-  grid-area: hr;
-}
-
-.fund-panel {
-  grid-area: fund;
-}
-
-.summary-panel {
-  grid-area: summary;
-}
+.investment-panel { grid-area: investment; }
+.industry-panel { grid-area: industry; }
+.risk-panel { grid-area: risk; }
+.construction-panel { grid-area: construction; }
+.hr-panel { grid-area: hr; }
+.fund-panel { grid-area: fund; }
+.summary-panel { grid-area: summary; }
 
 .investment-panel,
 .industry-panel,
@@ -285,10 +295,6 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
     radial-gradient(108% 72% at 0% 100%, rgba(54, 241, 205, 0.08), transparent 58%),
     radial-gradient(92% 68% at 100% 0%, rgba(90, 204, 255, 0.1), transparent 60%),
     var(--bg-panel);
-}
-
-.summary-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .investment-kpis {
@@ -530,7 +536,6 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
 
 .hr-kpis {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 10px;
   min-height: 0;
@@ -591,18 +596,66 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
   background: linear-gradient(135deg, rgba(90, 204, 255, 0.14), rgba(90, 204, 255, 0.06));
 }
 
-.summary-panel .table-wrap {
+/* 资产运营情况 */
+.asset-ops-layout {
   margin-top: 10px;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+  gap: 12px;
+}
+
+.asset-ops-kpis {
+  display: grid;
+  gap: 8px;
   min-height: 0;
   overflow: auto;
 }
 
-.summary-panel .table-wrap .data-table {
+.asset-ops-kpi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 10px;
+  background: var(--subscreen-subcard-bg);
+  border: 1px solid rgba(90, 204, 255, 0.1);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.asset-ops-kpi strong {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+}
+
+.asset-ops-detail {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.section-subtitle {
+  font-size: var(--text-xxs);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.table-wrap {
+  min-height: 0;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(90, 204, 255, 0.1);
+  background: var(--subscreen-subcard-bg);
+  padding: clamp(2px, 0.2vw, 6px);
+}
+
+.table-wrap .data-table {
   margin-top: 0;
 }
 
 .asset-total {
-  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -633,6 +686,10 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
   .signed-list {
     grid-template-columns: 1fr;
   }
+
+  .asset-ops-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -651,12 +708,15 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
   }
 
   .investment-kpis,
-  .risk-list,
-  .hr-kpis {
+  .risk-list {
     grid-template-columns: 1fr;
   }
 
   .signed-list {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-ops-layout {
     grid-template-columns: 1fr;
   }
 }

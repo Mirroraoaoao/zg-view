@@ -2,74 +2,59 @@
   <SubScreenLayout title="资金分析" subtitle="Treasury Analysis" meta="数据更新时间 08:30">
     <div v-if="loading" class="treasury-grid treasury-grid--loading">
       <SkeletonPanel class="skeleton-slot skeleton-slot--overview" />
-      <SkeletonPanel class="skeleton-slot skeleton-slot--channel" />
+      <SkeletonPanel class="skeleton-slot skeleton-slot--balance" />
       <SkeletonPanel class="skeleton-slot skeleton-slot--cost" />
       <SkeletonPanel class="skeleton-slot skeleton-slot--term" />
     </div>
 
     <div v-else class="treasury-grid">
+      <!-- L1: 融资管理 / L2: 融资进度 -->
       <section class="panel financing-overview panel-animate-in" :style="stagger[0]">
         <PanelHeader title="L1：融资管理 / L2：融资进度" />
         <div class="overview-kpis">
           <div class="kpi-card primary">
-            <div class="kpi-label">年度融资计划总额</div>
+            <div class="kpi-label">L3：年度融资计划总额</div>
             <div class="kpi-value">{{ treasuryData.financing.planTotal }}</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">年度融资计划已完成额</div>
+            <div class="kpi-label">L4：年度融资计划已完成额</div>
             <div class="kpi-value">{{ treasuryData.financing.planCompleted }}</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">年度融资计划剩余额度</div>
+            <div class="kpi-label">L4：年度融资计划剩余额度</div>
             <div class="kpi-value">{{ treasuryData.financing.planRemaining }}</div>
           </div>
         </div>
         <div class="chart">
-          <BaseChart :options="financingChannelOption" ariaLabel="融资渠道额度占比条形图" />
+          <BaseChart :options="balanceBarOption" ariaLabel="融资余额结构条形图" />
         </div>
       </section>
 
-      <section class="panel channel-detail panel-animate-in" :style="stagger[1]">
-        <PanelHeader title="L3：融资渠道额度占比" />
-        <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th scope="col">指标项</th>
-              <th scope="col">指标值</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>融资银行贷款额度占比</td>
-              <td>{{ treasuryData.financing.channels.bankLoan.ratio }}</td>
-            </tr>
-            <tr>
-              <td>融资债券额度占比</td>
-              <td>{{ treasuryData.financing.channels.bond.ratio }}</td>
-            </tr>
-            <tr>
-              <td>融资信托额度占比</td>
-              <td>{{ treasuryData.financing.channels.trust.ratio }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- L3: 融资余额 -->
+      <section class="panel balance-panel panel-animate-in" :style="stagger[1]">
+        <PanelHeader title="L3：融资余额" />
+        <div class="balance-list">
+          <div v-for="item in balanceItems" :key="item.label" class="balance-item">
+            <span class="balance-label">{{ item.label }}</span>
+            <strong class="balance-value">{{ item.value }}</strong>
+          </div>
         </div>
       </section>
 
+      <!-- L2: 融资成本与结构管理 -->
       <section class="panel cost-structure panel-animate-in" :style="stagger[2]">
         <PanelHeader title="L2：融资成本与结构管理" />
         <div class="cost-summary">
           <div class="cost-item highlight">
-            <span>集团综合融资成本率</span>
+            <span>L3：集团综合融资成本率</span>
             <strong>{{ treasuryData.cost.overallRate }}</strong>
           </div>
           <div class="cost-item">
-            <span>长期融资占比</span>
+            <span>L4：长期融资占比</span>
             <strong>{{ treasuryData.cost.termStructure.longTerm }}</strong>
           </div>
           <div class="cost-item">
-            <span>短期融资占比</span>
+            <span>L4：短期融资占比</span>
             <strong>{{ treasuryData.cost.termStructure.shortTerm }}</strong>
           </div>
         </div>
@@ -78,6 +63,7 @@
         </div>
       </section>
 
+      <!-- L3: 负债期限结构 -->
       <section class="panel term-structure panel-animate-in" :style="stagger[3]">
         <PanelHeader title="L3：负债期限结构" />
         <div class="chart">
@@ -88,7 +74,6 @@
           <span class="chip">短期负债 {{ treasuryData.cost.termStructure.shortTerm }}</span>
         </div>
       </section>
-
     </div>
   </SubScreenLayout>
 </template>
@@ -111,12 +96,25 @@ onMounted(() => {
 })
 onUnmounted(() => window.clearTimeout(loadingTimer))
 
-const financingChannelOption = computed(() => ({
-  grid: { top: 20, bottom: 20, left: 80, right: 30 },
-  xAxis: { type: 'value', max: 100, splitLine: { show: false }, axisLabel: { show: false } },
+const balanceItems = computed(() => [
+  { label: 'L4：银行贷款余额', value: treasuryData.financing.balances.bankLoan },
+  { label: 'L4：债券余额', value: treasuryData.financing.balances.bond },
+  { label: 'L4：信托余额', value: treasuryData.financing.balances.trust },
+  { label: 'L4：融资租赁余额', value: treasuryData.financing.balances.financingLease },
+  { label: 'L4：其他融资余额', value: treasuryData.financing.balances.other }
+])
+
+const parseAmount = (str: string) => {
+  const match = str.match(/([\d.]+)/)
+  return match ? Number.parseFloat(match[1]) : 0
+}
+
+const balanceBarOption = computed(() => ({
+  grid: { top: 20, bottom: 20, left: 100, right: 30 },
+  xAxis: { type: 'value', splitLine: { show: false }, axisLabel: { show: false } },
   yAxis: {
     type: 'category',
-    data: ['融资银行贷款额度占比', '融资债券额度占比', '融资信托额度占比'],
+    data: ['银行贷款', '债券', '信托', '融资租赁', '其他'],
     axisLine: { show: false },
     axisTick: { show: false }
   },
@@ -125,12 +123,14 @@ const financingChannelOption = computed(() => ({
       type: 'bar',
       semantic: 'revenue',
       data: [
-        Number.parseFloat(treasuryData.financing.channels.bankLoan.ratio),
-        Number.parseFloat(treasuryData.financing.channels.bond.ratio),
-        Number.parseFloat(treasuryData.financing.channels.trust.ratio)
+        parseAmount(treasuryData.financing.balances.bankLoan),
+        parseAmount(treasuryData.financing.balances.bond),
+        parseAmount(treasuryData.financing.balances.trust),
+        parseAmount(treasuryData.financing.balances.financingLease),
+        parseAmount(treasuryData.financing.balances.other)
       ],
       barWidth: 14,
-      label: { show: true, position: 'right', formatter: '{c}%' }
+      label: { show: true, position: 'right', formatter: '{c} 亿' }
     }
   ]
 }))
@@ -185,7 +185,7 @@ const termStructureOption = computed(() => ({
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   grid-template-rows: minmax(0, 1.05fr) minmax(0, 0.95fr);
   grid-template-areas:
-    'overview channel'
+    'overview balance'
     'cost term';
   gap: 14px;
 }
@@ -195,12 +195,12 @@ const termStructureOption = computed(() => ({
 }
 
 .skeleton-slot--overview { grid-area: overview; }
-.skeleton-slot--channel { grid-area: channel; }
+.skeleton-slot--balance { grid-area: balance; }
 .skeleton-slot--cost { grid-area: cost; }
 .skeleton-slot--term { grid-area: term; }
 
 .financing-overview,
-.channel-detail,
+.balance-panel,
 .cost-structure,
 .term-structure {
   min-height: 0;
@@ -217,8 +217,8 @@ const termStructureOption = computed(() => ({
   grid-template-rows: auto auto minmax(0, 1fr);
 }
 
-.channel-detail {
-  grid-area: channel;
+.balance-panel {
+  grid-area: balance;
 }
 
 .cost-structure {
@@ -253,9 +253,9 @@ const termStructureOption = computed(() => ({
 }
 
 .kpi-label {
-  font-size: var(--text-xs);
+  font-size: var(--text-xxs);
   color: var(--text-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   margin-bottom: 6px;
 }
 
@@ -271,18 +271,37 @@ const termStructureOption = computed(() => ({
   min-height: 170px;
 }
 
-.table-wrap {
+/* 融资余额面板 */
+.balance-list {
   margin-top: 10px;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
-  padding: var(--space-1);
-  overflow: auto;
-  min-height: 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
-.table-wrap .data-table {
-  margin-top: 0;
+.balance-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.balance-value {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  white-space: nowrap;
 }
 
 .cost-summary {
@@ -326,7 +345,7 @@ const termStructureOption = computed(() => ({
     grid-template-rows: auto;
     grid-template-areas:
       'overview'
-      'channel'
+      'balance'
       'cost'
       'term';
     overflow-y: auto;

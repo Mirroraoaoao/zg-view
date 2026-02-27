@@ -3,7 +3,7 @@ export const assetData = {
     l1: '物业资产盘活',
     l2: ['资产去化', '资产运营']
   },
-  // 资产运营 - 出租率相关
+  // L2: 资产运营
   rental: {
     overall: '85%',
     byType: [
@@ -18,11 +18,18 @@ export const assetData = {
     },
     income: '￥ 4.2 亿'
   },
-  // 物业资产盘活 - 房产销售
+  // L2: 资产去化
   sales: {
-    annualAmount: '￥ 68 亿',
-    annualArea: '86 万㎡',
     availableArea: '420 万㎡',
-    completionRate: '68%'
+    annualArea: '86 万㎡',
+    annualAmount: '￥ 68 亿',
+    annualTarget: '￥ 100 亿',
+    completionRate: '68%',
+    // L3: 其他去化方式完成额
+    otherDisposal: {
+      bulkTransaction: '￥ 12.5 亿',
+      landReturn: '￥ 8.2 亿',
+      assetSecuritization: '￥ 5.6 亿'
+    }
   }
 }

@@ -13,16 +13,14 @@ export const overallData = {
       { label: '经营性现金流净额', value: '￥ 86.5 亿', trend: '+5.1%', trendType: 'up', section: '营收与利润' },
       { label: '人效比', value: '116.1 万/人', trend: '+2.1%', trendType: 'up', section: '营收与利润' },
       { label: '珠琴澳三地特色产业集群总产值', value: '￥ 860 亿', trend: '+7.2%', trendType: 'up', section: '贡献与产值' },
-      { label: '战略新兴产业规模', value: '￥ 420 亿', trend: '+9.6%', trendType: 'up', section: '贡献与产值' },
+      { label: '新兴产业规模', value: '￥ 420 亿', trend: '+9.6%', trendType: 'up', section: '贡献与产值' },
       { label: '累计GDP贡献值（分板块）', value: '￥ 980 亿', trend: '+5.8%', trendType: 'up', section: '贡献与产值' },
       { label: '税收贡献（分板块）', value: '￥ 37.2 亿', trend: '+6.2%', trendType: 'up', section: '贡献与产值' },
       { label: '带动社会消费品零售额', value: '￥ 260 亿', trend: '+4.5%', trendType: 'up', section: '贡献与产值' },
       { label: '生产性服务占比', value: '36.5%', trend: '+1.2%', trendType: 'up', section: '贡献与产值' },
       { label: '费用压降情况（人力成本）', value: '-4.2%', trend: '+0.6%', trendType: 'up', section: '费用压降' },
-      { label: '费用压降情况（财务费用）', value: '-3.1%', trend: '+0.4%', trendType: 'up', section: '费用压降' },
-      { label: '费用压降情况（采购费用）', value: '-5.6%', trend: '+0.9%', trendType: 'up', section: '费用压降' },
-      { label: '费用压降情况（工程建设成本）', value: '-2.8%', trend: '+0.3%', trendType: 'up', section: '费用压降' },
-      { label: '费用压降情况（其他期间费用）', value: '-3.7%', trend: '+0.5%', trendType: 'up', section: '费用压降' }
+      { label: '费用压降情况（期间费用）', value: '-3.5%', trend: '+0.5%', trendType: 'up', section: '费用压降' },
+      { label: '费用压降情况（预结算审核压降金额）', value: '￥ 2.8 亿', trend: '+12%', trendType: 'up', section: '费用压降' }
     ],
     trend: {
       labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
@@ -39,7 +37,7 @@ export const overallData = {
   assetScale: {
     total: '￥ 980 亿',
     growth: '同比 +5.8%',
-    increase: '战略新兴产业规模 ￥ 420 亿',
+    increase: '新兴产业规模 ￥ 420 亿',
     categories: [
       { name: '制造板块', value: 38, color: '#5accff' },
       { name: '服务板块', value: 34, color: '#36f1cd' },
@@ -54,10 +52,8 @@ export const overallData = {
   investment: {
     progress: [
       { label: '人力成本压降', value: 82 },
-      { label: '财务费用压降', value: 76 },
-      { label: '采购费用压降', value: 84 },
-      { label: '工程建设成本压降', value: 72 },
-      { label: '其他期间费用压降', value: 78 }
+      { label: '期间费用压降', value: 78 },
+      { label: '预结算审核压降金额', value: 75 }
     ],
     kpis: [
       { label: '经营性现金流净额', value: '￥ 86.5 亿' },
@@ -79,7 +75,7 @@ export const overallData = {
   hrStatus: {
     summary: [
       { label: '珠琴澳三地特色产业集群总产值', value: '￥ 860 亿' },
-      { label: '战略新兴产业规模', value: '￥ 420 亿' },
+      { label: '新兴产业规模', value: '￥ 420 亿' },
       { label: '累计GDP贡献值（分板块）', value: '￥ 980 亿' }
     ],
     talent: [

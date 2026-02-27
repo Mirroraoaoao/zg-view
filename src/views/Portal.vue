@@ -134,6 +134,19 @@
         </div>
       </section>
     </main>
+
+    <nav class="portal-nav" aria-label="模块导航">
+      <button
+        v-for="item in navItems"
+        :key="item.name"
+        class="nav-item"
+        type="button"
+        @click="go(item.name)"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </button>
+    </nav>
   </div>
 </template>
 
@@ -231,6 +244,18 @@ const heroTrendOption = computed(() => {
 const go = (name: string) => {
   router.push({ name })
 }
+
+const navItems = [
+  { name: 'overall', label: '经营数据', icon: '核心' },
+  { name: 'finance', label: '财务管理', icon: '财务' },
+  { name: 'treasury', label: '资金分析', icon: '资金' },
+  { name: 'investment', label: '投资运营', icon: '投资' },
+  { name: 'projects', label: '重点项目', icon: '项目' },
+  { name: 'asset', label: '资产管理', icon: '资产' },
+  { name: 'operation', label: '业务数据', icon: '业务' },
+  { name: 'hr', label: '人力资源', icon: '人力' },
+  { name: 'admin', label: '行政管理', icon: '行政' }
+]
 
 onMounted(() => {
   timer = window.setInterval(() => {
@@ -756,6 +781,50 @@ onUnmounted(() => {
   text-shadow: 0 0 10px rgba(90, 204, 255, 0.25);
 }
 
+/* ── 底部模块导航 ── */
+.portal-nav {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.portal-nav .nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  border: 1px solid var(--nav-border);
+  background: var(--nav-bg);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  font-family: var(--font-display);
+  transition:
+    var(--transition-color),
+    var(--transition-border),
+    var(--transition-shadow);
+}
+
+.portal-nav .nav-item:hover {
+  color: var(--text-primary);
+  border-color: var(--nav-hover-border);
+  box-shadow: var(--nav-hover-shadow);
+}
+
+.portal-nav .nav-icon {
+  font-size: var(--text-xxs);
+  padding: clamp(3px, 0.25vw, 6px) var(--space-1);
+  border-radius: 999px;
+  background: var(--nav-active-bg);
+  color: var(--accent-cyan);
+}
+
 /* ── 动画 ── */
 @keyframes pulse {
   0%   { transform: scale(1);   opacity: 0.6; }
@@ -796,6 +865,13 @@ onUnmounted(() => {
     grid-template-rows: unset;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
   }
 }
 </style>

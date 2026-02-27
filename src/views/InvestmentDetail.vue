@@ -374,15 +374,14 @@ const marketTrendRange = computed(() => {
 }
 
 .trend-bars {
-  min-height: 0;
+  min-height: 80px;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
-  align-items: end;
+  align-items: stretch;
 }
 
 .trend-item {
-  min-height: 0;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto auto;
   gap: 6px;
@@ -391,17 +390,20 @@ const marketTrendRange = computed(() => {
 
 .trend-track {
   width: 100%;
-  height: 100%;
+  min-height: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(90, 204, 255, 0.12);
-  display: flex;
-  align-items: end;
-  padding: clamp(2px, 0.22vw, 6px);
+  position: relative;
+  overflow: hidden;
 }
 
 .trend-fill {
+  display: block;
   width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(90, 204, 255, 0.9), rgba(54, 241, 205, 0.7));
   box-shadow: 0 0 8px rgba(90, 204, 255, 0.25);

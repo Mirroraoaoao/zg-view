@@ -13,20 +13,29 @@
         <PanelHeader title="L1：融资管理 / L2：融资进度" />
         <div class="overview-kpis">
           <div class="kpi-card primary">
-            <div class="kpi-label">L3：年度融资计划总额</div>
-            <div class="kpi-value">{{ treasuryData.financing.planTotal }}</div>
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">L3：年度融资计划总额</div>
+              <div class="kpi-value hero">{{ treasuryData.financing.planTotal }}</div>
+              <div class="kpi-sub">年度累计口径</div>
+            </div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-label">L4：年度融资计划已完成额</div>
-            <div class="kpi-value">{{ treasuryData.financing.planCompleted }}</div>
+          <div class="kpi-pair">
+            <div class="kpi-card accent-completed">
+              <div class="kpi-label">L4：年度融资计划已完成额</div>
+              <div class="kpi-value">{{ treasuryData.financing.planCompleted }}</div>
+              <div class="kpi-bar"><div class="kpi-bar-fill completed"></div></div>
+            </div>
+            <div class="kpi-card accent-remaining">
+              <div class="kpi-label">L4：年度融资计划剩余额度</div>
+              <div class="kpi-value">{{ treasuryData.financing.planRemaining }}</div>
+              <div class="kpi-bar"><div class="kpi-bar-fill remaining"></div></div>
+            </div>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-label">L4：年度融资计划剩余额度</div>
-            <div class="kpi-value">{{ treasuryData.financing.planRemaining }}</div>
-          </div>
-        </div>
-        <div class="chart">
-          <BaseChart :options="balanceBarOption" ariaLabel="融资余额结构条形图" />
         </div>
       </section>
 
@@ -48,14 +57,6 @@
           <div class="cost-item highlight">
             <span>L3：集团综合融资成本率</span>
             <strong>{{ treasuryData.cost.overallRate }}</strong>
-          </div>
-          <div class="cost-item">
-            <span>L4：长期融资占比</span>
-            <strong>{{ treasuryData.cost.termStructure.longTerm }}</strong>
-          </div>
-          <div class="cost-item">
-            <span>L4：短期融资占比</span>
-            <strong>{{ treasuryData.cost.termStructure.shortTerm }}</strong>
           </div>
         </div>
         <div class="chart">
@@ -103,37 +104,6 @@ const balanceItems = computed(() => [
   { label: 'L4：融资租赁余额', value: treasuryData.financing.balances.financingLease },
   { label: 'L4：其他融资余额', value: treasuryData.financing.balances.other }
 ])
-
-const parseAmount = (str: string) => {
-  const match = str.match(/([\d.]+)/)
-  return match ? Number.parseFloat(match[1]) : 0
-}
-
-const balanceBarOption = computed(() => ({
-  grid: { top: 20, bottom: 20, left: 100, right: 30 },
-  xAxis: { type: 'value', splitLine: { show: false }, axisLabel: { show: false } },
-  yAxis: {
-    type: 'category',
-    data: ['银行贷款', '债券', '信托', '融资租赁', '其他'],
-    axisLine: { show: false },
-    axisTick: { show: false }
-  },
-  series: [
-    {
-      type: 'bar',
-      semantic: 'revenue',
-      data: [
-        parseAmount(treasuryData.financing.balances.bankLoan),
-        parseAmount(treasuryData.financing.balances.bond),
-        parseAmount(treasuryData.financing.balances.trust),
-        parseAmount(treasuryData.financing.balances.financingLease),
-        parseAmount(treasuryData.financing.balances.other)
-      ],
-      barWidth: 14,
-      label: { show: true, position: 'right', formatter: '{c} 亿' }
-    }
-  ]
-}))
 
 const costTrendOption = computed(() => ({
   grid: { top: 20, bottom: 20, left: 40, right: 20 },
@@ -214,7 +184,6 @@ const termStructureOption = computed(() => ({
 
 .financing-overview {
   grid-area: overview;
-  grid-template-rows: auto auto minmax(0, 1fr);
 }
 
 .balance-panel {
@@ -233,36 +202,117 @@ const termStructureOption = computed(() => ({
 
 .overview-kpis {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
   margin-top: 10px;
-  margin-bottom: 12px;
+  height: 100%;
+  min-height: 0;
 }
 
 .kpi-card {
-  padding: var(--space-2) var(--space-3);
-  border-radius: 12px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 14px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
 }
 
 .kpi-card.primary {
   border-color: rgba(90, 204, 255, 0.22);
   background: var(--subscreen-ring-bg);
-  box-shadow: inset 0 0 14px rgba(90, 204, 255, 0.08);
+  box-shadow: inset 0 0 18px rgba(90, 204, 255, 0.08);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+}
+
+.kpi-card.accent-completed {
+  border-color: rgba(54, 241, 205, 0.18);
+}
+
+.kpi-card.accent-remaining {
+  border-color: rgba(248, 197, 71, 0.18);
+}
+
+.kpi-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(54, 241, 205, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.kpi-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.kpi-pair {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  min-height: 0;
 }
 
 .kpi-label {
   font-size: var(--text-xxs);
   color: var(--text-muted);
   letter-spacing: 0.06em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .kpi-value {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--text-primary);
+}
+
+.kpi-value.hero {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #e9fbff;
+  text-shadow: 0 0 12px rgba(90, 204, 255, 0.3);
+}
+
+.kpi-sub {
+  margin-top: 4px;
+  font-size: var(--text-xxs);
+  color: var(--text-secondary);
+}
+
+.kpi-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-top: 4px;
+}
+
+.kpi-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.kpi-bar-fill.completed {
+  width: 66%;
+  background: linear-gradient(90deg, #36f1cd, #5accff);
+}
+
+.kpi-bar-fill.remaining {
+  width: 34%;
+  background: linear-gradient(90deg, #f8c547, #f8c547aa);
 }
 
 .chart {
@@ -353,6 +403,11 @@ const termStructureOption = computed(() => ({
 
   .overview-kpis {
     grid-template-columns: 1fr;
+  }
+
+  .kpi-card.primary {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .chart {

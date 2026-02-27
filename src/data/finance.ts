@@ -8,7 +8,7 @@ export const financeData = {
       { label: '资产总额', value: '￥ 2,105 亿' },
       { label: '负债总额', value: '￥ 1,025 亿' },
       { label: '净资产', value: '￥ 1,080 亿' },
-      { label: '营业收入', value: '￥ 1,452 亿' },
+      { label: '总营业收入', value: '￥ 1,452 亿' },
       { label: '成本费用（不含财务费用）', value: '￥ 1,105 亿' },
       { label: '净利润', value: '￥ 210.4 亿' },
       { label: '经营性现金流量净额', value: '￥ 86.5 亿' },

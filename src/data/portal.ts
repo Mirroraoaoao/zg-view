@@ -16,15 +16,17 @@ export const portalData = {
       { label: '净利润', value: '￥ 210.4 亿' },
       { label: '负债总额', value: '￥ 1,025 亿' },
       { label: '资产负债率', value: '48.7%' },
-      { label: '经营性现金流净额', value: '￥ 86.5 亿' }
+      { label: '经营性现金流净额', value: '￥ 86.5 亿' },
+      { label: '净资产收益率（年化）', value: '19.5%' },
+      { label: '营业现金比率', value: '6.0%' }
     ]
   },
   heroCharts: {
     trend: {
       labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'],
-      values: [145, 168, 172, 185, 178, 192, 205, 207],
-      color: '#5accff',
-      areaColor: 'rgba(90, 204, 255, 0.18)'
+      revenue: [145, 168, 172, 185, 178, 192, 205, 207],
+      profit:  [28,  33,  35,  40,  37,  43,  48,  51],
+      debt:    [98, 102, 105, 108, 104, 107, 112, 115],
     }
   },
   leftModules: [
@@ -45,13 +47,30 @@ export const portalData = {
       name: 'treasury',
       title: '资金分析',
       tag: '融资',
-      desc: '融资计划执行与成本结构',
+      desc: '融资结构与成本管理',
       metrics: [
         { label: '年度融资计划已完成额', value: '￥ 210 亿' },
-        { label: '银行贷款余额', value: '￥ 180 亿' },
-        { label: '长期融资占比', value: '58%' }
+        { label: '年度融资计划剩余额度', value: '￥ 90 亿' },
+        { label: '银行贷款余额', value: '180' },
+        { label: '债券余额', value: '60' },
+        { label: '信托余额', value: '30' },
+        { label: '融资租赁余额', value: '20' },
+        { label: '其他融资余额', value: '10' },
+        { label: '长期融资占比', value: '58%' },
+        { label: '短期融资占比', value: '42%' },
       ],
-      chart: null
+      treasuryChart: {
+        planTotal: 300,
+        planDone: 210,
+        loanBreakdown: [
+          { name: '银行贷款', value: 180 },
+          { name: '债券', value: 60 },
+          { name: '信托', value: 30 },
+          { name: '融资租赁', value: 20 },
+          { name: '其他', value: 10 },
+        ],
+        longTermRatio: 58,
+      },
     },
     {
       name: 'investment',
@@ -67,7 +86,10 @@ export const portalData = {
         { label: '控股上市公司市值', value: '￥ 860 亿' },
         { label: '年度分红', value: '￥ 12 亿' }
       ],
-      chart: null
+      marketCapTrend: {
+        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'],
+        values: [720, 745, 780, 810, 796, 830, 855, 860],
+      },
     },
     {
       name: 'operation',
@@ -83,7 +105,18 @@ export const portalData = {
         { label: '珠海招引企业税收贡献', value: '￥ 22 亿' },
         { label: '诉讼项目数量', value: '7 项' }
       ],
-      chart: null
+      operationChart: {
+        // 新招引 vs 累计招引（合作区 / 珠海市）
+        recruit: [
+          { name: '合作区', current: 6, total: 10 },
+          { name: '珠海市', current: 4, total: 8 },
+        ],
+        // 税收贡献
+        taxContrib: [
+          { name: '合作区', value: 20 },
+          { name: '珠海市', value: 22 },
+        ],
+      },
     },
     {
       name: 'asset',
@@ -96,7 +129,9 @@ export const portalData = {
         { label: '年度累计租金收入', value: '￥ 18 亿' },
         { label: '物业总体出租率', value: '85%' }
       ],
-      chart: null
+      assetChart: {
+        occupancyRate: 85,   // 物业出租率 %
+      },
     }
   ],
   rightModules: [

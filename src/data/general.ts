@@ -39,11 +39,16 @@ export const overallData = {
     growth: '同比 +5.8%',
     increase: '新兴产业规模 ￥ 420 亿',
     categories: [
-      { name: '制造板块', value: 38, color: '#5accff' },
-      { name: '服务板块', value: 34, color: '#36f1cd' },
-      { name: '投资板块', value: 28, color: '#f8c547' }
+      { name: '产业科技板块', value: 18, color: '#5accff' },
+      { name: '金融资本板块', value: 16, color: '#36f1cd' },
+      { name: '城市开发板块', value: 14, color: '#f8c547' },
+      { name: '建筑工程板块', value: 13, color: '#7cf29a' },
+      { name: '物业资管板块', value: 12, color: '#ff6b6b' },
+      { name: '跨境贸易板块', value: 11, color: '#c78aff' },
+      { name: '跨境文旅板块', value: 9, color: '#ff9f43' },
+      { name: '跨境人力板块', value: 7, color: '#6a7b96' }
     ],
-    tags: ['制造板块 ￥ 372 亿', '服务板块 ￥ 333 亿', '投资板块 ￥ 275 亿'],
+    tags: ['产业科技 ￥ 176 亿', '金融资本 ￥ 157 亿', '城市开发 ￥ 137 亿', '建筑工程 ￥ 127 亿', '物业资管 ￥ 118 亿', '跨境贸易 ￥ 108 亿', '跨境文旅 ￥ 88 亿', '跨境人力 ￥ 69 亿'],
     trend: {
       labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
       values: [620, 680, 720, 800, 900, 980]

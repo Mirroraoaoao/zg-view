@@ -62,17 +62,27 @@
                 <thead>
                   <tr>
                     <th scope="col">职级</th>
-                    <th scope="col">制造板块</th>
-                    <th scope="col">服务板块</th>
-                    <th scope="col">投资板块</th>
+                    <th scope="col">产业科技</th>
+                    <th scope="col">金融资本</th>
+                    <th scope="col">城市开发</th>
+                    <th scope="col">建筑工程</th>
+                    <th scope="col">物业资管</th>
+                    <th scope="col">跨境贸易</th>
+                    <th scope="col">跨境文旅</th>
+                    <th scope="col">跨境人力</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="item in hrData.cadreDistribution" :key="item.level">
                     <td>{{ item.level }}</td>
-                    <td>{{ item.manufacturing }}</td>
-                    <td>{{ item.service }}</td>
-                    <td>{{ item.investment }}</td>
+                    <td>{{ item.industryTech }}</td>
+                    <td>{{ item.financeCapital }}</td>
+                    <td>{{ item.cityDev }}</td>
+                    <td>{{ item.construction }}</td>
+                    <td>{{ item.propertyAsset }}</td>
+                    <td>{{ item.crossBorderTrade }}</td>
+                    <td>{{ item.crossBorderTourism }}</td>
+                    <td>{{ item.crossBorderHR }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -453,8 +463,8 @@ const talentOption = computed(() => ({
 .salary-list {
   min-height: 0;
   display: grid;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: 4px;
 }
 
 .salary-item {

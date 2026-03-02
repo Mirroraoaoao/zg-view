@@ -296,7 +296,7 @@ const focusNav = (currentIndex: number, direction: number) => {
 }
 
 const { header, hero, heroCharts, leftModules, rightModules } = portalData
-const headerTitle = header?.title?.trim() || '集团数据驾驶舱'
+const headerTitle = header?.title?.trim() || '经营调度驾驶舱'
 const headerSubtitle = header?.subtitle?.trim() || '企业经营全景态势一屏统览'
 
 // 百分比指标色彩映射（ECharts 需要实际颜色值，不支持 CSS 变量）

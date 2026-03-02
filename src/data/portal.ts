@@ -1,6 +1,6 @@
 export const portalData = {
   header: {
-    title: '集团数据驾驶舱',
+    title: '经营调度驾驶舱',
     subtitle: '企业经营全景态势一屏统览',
     status: '数据同步正常'
   },

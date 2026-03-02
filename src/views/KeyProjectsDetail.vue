@@ -164,6 +164,11 @@ const statusSummary = computed(() => [
 
 <style scoped lang="scss">
 .projects-grid {
+  --kp-title-size: clamp(20px, 1.3vw, 34px);
+  --kp-label-size: clamp(14px, 0.9vw, 22px);
+  --kp-meta-size: clamp(13px, 0.72vw, 18px);
+  --kp-value-size: clamp(24px, 1.55vw, 38px);
+  --kp-big-value-size: clamp(42px, 2.6vw, 72px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -171,7 +176,7 @@ const statusSummary = computed(() => [
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   grid-template-rows: minmax(0, 1fr);
   grid-template-areas: 'count status';
-  gap: 14px;
+  gap: clamp(14px, 1vw, 22px);
 }
 
 .projects-grid--loading {
@@ -202,18 +207,18 @@ const statusSummary = computed(() => [
 
 /* L1: 年度重点任务数量 */
 .count-layout {
-  margin-top: 10px;
+  margin-top: 12px;
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 12px;
+  gap: 14px;
 }
 
 .count-card {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: var(--space-4);
+  gap: 22px;
+  padding: clamp(18px, 1.2vw, 30px);
   border-radius: 16px;
   background: var(--subscreen-ring-bg);
   border: 1px solid rgba(90, 204, 255, 0.22);
@@ -221,8 +226,8 @@ const statusSummary = computed(() => [
 }
 
 .count-icon {
-  width: 64px;
-  height: 64px;
+  width: 78px;
+  height: 78px;
   border-radius: 16px;
   background: rgba(54, 241, 205, 0.15);
   display: flex;
@@ -232,8 +237,8 @@ const statusSummary = computed(() => [
   flex-shrink: 0;
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -243,70 +248,77 @@ const statusSummary = computed(() => [
 }
 
 .count-label {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  letter-spacing: 0.08em;
+  font-size: var(--kp-label-size);
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .count-value {
   margin-top: 6px;
-  font-size: 2.2rem;
+  font-size: var(--kp-big-value-size);
   font-family: var(--font-display);
   font-weight: 700;
   color: #e9fbff;
   text-shadow: 0 0 14px rgba(90, 204, 255, 0.3);
+  line-height: 1.02;
 }
 
 .count-foot {
   margin-top: 8px;
-  font-size: var(--text-xxs);
+  font-size: var(--kp-meta-size);
   color: var(--text-secondary);
+  line-height: 1.35;
 }
 
 .count-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
   min-height: 0;
-  overflow: auto;
+  overflow: visible;
 }
 
 .summary-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: var(--space-2) var(--space-3);
+  gap: 10px;
+  padding: clamp(12px, 0.8vw, 18px) clamp(14px, 1vw, 24px);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
 }
 
 .summary-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .summary-label {
   flex: 1;
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
+  font-size: var(--kp-label-size);
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .summary-value {
   font-family: var(--font-display);
-  font-size: var(--text-md);
+  font-size: var(--kp-value-size);
   color: var(--text-primary);
+  line-height: 1;
 }
 
 /* L1: 年度重点任务完成情况 */
 .status-layout {
-  margin-top: 10px;
+  margin-top: 12px;
   min-height: 0;
   display: grid;
-  grid-template-columns: 170px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 14px;
 }
 
 .ring-card {
@@ -330,8 +342,8 @@ const statusSummary = computed(() => [
 
 .status-ring {
   position: relative;
-  width: 132px;
-  height: 132px;
+  width: 158px;
+  height: 158px;
 
   svg {
     width: 100%;
@@ -349,16 +361,18 @@ const statusSummary = computed(() => [
 }
 
 .ring-value {
-  font-size: 1.7rem;
+  font-size: clamp(34px, 2.2vw, 52px);
   font-family: var(--font-display);
   font-weight: 700;
   color: #e9fbff;
+  line-height: 1;
 }
 
 .ring-label {
-  font-size: var(--text-xxs);
+  font-size: var(--kp-label-size);
   color: var(--text-muted);
   margin-top: 4px;
+  line-height: 1.3;
 }
 
 .status-cards {
@@ -366,14 +380,14 @@ const statusSummary = computed(() => [
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
 }
 
 .status-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: var(--space-2) var(--space-3);
+  gap: 14px;
+  padding: clamp(12px, 0.8vw, 18px) clamp(14px, 1vw, 22px);
   border-radius: 12px;
   background: var(--subscreen-subcard-bg);
   border: 1px solid rgba(90, 204, 255, 0.1);
@@ -391,8 +405,8 @@ const statusSummary = computed(() => [
 }
 
 .status-item-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -400,8 +414,8 @@ const statusSummary = computed(() => [
   flex-shrink: 0;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -416,15 +430,17 @@ const statusSummary = computed(() => [
 }
 
 .status-item-label {
-  font-size: var(--text-xxs);
+  font-size: var(--kp-label-size);
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  line-height: 1.3;
 }
 
 .status-item-value {
-  font-size: 1.3rem;
+  font-size: clamp(30px, 1.9vw, 44px);
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1;
 }
 
 @media (max-width: 1280px) {
@@ -442,10 +458,17 @@ const statusSummary = computed(() => [
   }
 
   .status-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
   }
 
   .count-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 920px) {
+  .status-cards {
     grid-template-columns: 1fr;
   }
 }

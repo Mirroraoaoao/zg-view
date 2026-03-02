@@ -18,9 +18,8 @@
               <div class="section-title">L2：营收与利润类指标</div>
               <div class="profit-list">
                 <div v-for="item in primaryMetrics" :key="item.label" class="profit-row">
-                  <span>{{ item.label }}</span>
+                  <span class="label">{{ item.label }}</span>
                   <span class="value">{{ item.value }}</span>
-                  <span class="trend" :class="item.trendType">{{ item.trend }}</span>
                 </div>
               </div>
             </div>
@@ -28,9 +27,8 @@
               <div class="section-title">L2：贡献与产值类指标</div>
               <div class="profit-list">
                 <div v-for="item in contributionMetrics" :key="item.label" class="profit-row">
-                  <span>{{ item.label }}</span>
+                  <span class="label">{{ item.label }}</span>
                   <span class="value">{{ item.value }}</span>
-                  <span class="trend" :class="item.trendType">{{ item.trend }}</span>
                 </div>
               </div>
             </div>
@@ -38,15 +36,11 @@
               <div class="section-title">L2：费用压降类指标</div>
               <div class="profit-list">
                 <div v-for="item in costMetrics" :key="item.label" class="profit-row">
-                  <span>{{ item.label }}</span>
+                  <span class="label">{{ item.label }}</span>
                   <span class="value">{{ item.value }}</span>
-                  <span class="trend" :class="item.trendType">{{ item.trend }}</span>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="chart">
-            <BaseChart :options="operatingTrendOption" group="overall-link" ariaLabel="集团营收数据趋势折线图" />
           </div>
         </div>
       </section>
@@ -162,59 +156,6 @@ onUnmounted(() => window.clearTimeout(loadingTimer))
 const primaryMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '营收与利润'))
 const contributionMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '贡献与产值'))
 const costMetrics = computed(() => overallData.operating.metrics.filter((item) => item.section === '费用压降'))
-
-const operatingTrendOption = computed(() => ({
-  tooltip: { trigger: 'axis' },
-  grid: {
-    top: scaleNumber(28, 24),
-    bottom: scaleNumber(18, 16),
-    left: scaleNumber(44, 40),
-    right: scaleNumber(24, 20)
-  },
-  xAxis: {
-    type: 'category',
-    data: overallData.operating.trend.labels,
-    axisLine: { lineStyle: { color: colors.axisLine } },
-    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) }
-  },
-  yAxis: {
-    type: 'value',
-    axisLabel: { color: colors.textSecondary, fontSize: scaleNumber(11, 11) },
-    splitLine: { lineStyle: { color: colors.splitLine } }
-  },
-  series: [
-    {
-      type: 'line',
-      data: overallData.operating.trend.values,
-      smooth: true,
-      lineStyle: {
-        color: colors.target,
-        width: scaleFloat(2.4, 2),
-        shadowBlur: scaleNumber(14, 10),
-        shadowColor: 'rgba(248, 197, 71, 0.55)'
-      },
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            { offset: 0, color: 'rgba(248, 197, 71, 0.3)' },
-            { offset: 0.4, color: 'rgba(248, 197, 71, 0.12)' },
-            { offset: 1, color: 'rgba(12, 24, 40, 0)' }
-          ]
-        }
-      },
-      symbol: 'circle',
-      symbolSize: scaleNumber(6, 6),
-      showSymbol: false,
-      emphasis: { focus: 'series' },
-      markPoint: { data: [{ type: 'max', name: '峰值' }] }
-    }
-  ]
-}))
 
 const assetTrendOption = computed(() => ({
   tooltip: { trigger: 'axis' },
@@ -428,23 +369,22 @@ const talentPieOption = computed(() => ({
 }
 
 .profit-body {
-  display: grid;
-  grid-template-columns: 1fr 1.05fr;
-  gap: var(--space-2);
+  display: block;
   height: 100%;
   min-height: 0;
 }
 
 .profit-sections {
   display: grid;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-1);
   min-height: 0;
 }
 
 .profit-section {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto;
+  align-content: start;
   gap: var(--space-1);
   min-height: 0;
   padding: var(--space-1);
@@ -462,53 +402,41 @@ const talentPieOption = computed(() => ({
 .profit-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 6px var(--space-1);
-  font-size: var(--text-sm);
+  gap: 4px var(--space-1);
+  font-size: var(--text-xs);
   color: var(--text-secondary);
-  padding-right: 4px;
+  padding-right: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: visible;
 }
 
 .profit-row {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-start;
   column-gap: var(--space-1);
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   border-bottom: 1px dashed rgba(90, 204, 255, 0.12);
+}
+
+.profit-row .label {
+  min-width: 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .profit-row .value {
   font-family: var(--font-display);
   color: var(--text-primary);
-  font-size: var(--text-md);
-}
-
-.trend {
-  font-family: var(--font-display);
-}
-
-.trend.up {
-  color: var(--accent-lime);
-}
-
-.trend.down {
-  color: var(--accent-rose);
-}
-
-.trend.flat {
-  color: var(--text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  align-self: center;
 }
 
 .chart {
   width: 100%;
   height: 100%;
   min-height: clamp(140px, 15vh, 220px);
-}
-
-.profit-panel .chart {
-  min-height: 0;
 }
 
 .asset-summary {
@@ -729,12 +657,8 @@ const talentPieOption = computed(() => ({
     overflow-y: auto;
   }
 
-  .profit-body {
-    grid-template-columns: 1fr;
-  }
-
   .profit-sections {
-    grid-template-rows: auto;
+    grid-template-columns: 1fr;
   }
 
   .asset-panel,
